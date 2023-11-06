@@ -9,6 +9,7 @@ namespace ConsoleApp
         public static string[] _playerIds = null!;
         public static UnoDeck _deck = null!;
 
+        
         private static List<List<UnoCard>> _playerHand = null!;
         public static List<UnoCard> _stockPile = null!;
 
