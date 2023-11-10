@@ -2,6 +2,7 @@
 
 public static class GameState
 {
+    //public static int GameId = 0;
     public static bool GameDirection { get; set; }
     public static int CurrentPlayerIndex { get; set; } = 0;
     
@@ -13,6 +14,36 @@ public static class GameState
     
     public static UnoCard.Color CardColorChoice = default;
     public static bool IsColorChosen { get; set; } = false;
-    public static int SelectedCardIndex { get; set; } = -1; // Initialize to -1
+    public static int SelectedCardIndex { get; set; } = -1;
+    
+    public static GameStateData GetGameStateData()
+    {
+        return new GameStateData
+        {
+            //GameId = GameId,
+            GameDirection = GameDirection,
+            CurrentPlayerIndex = CurrentPlayerIndex,
+            UnoDeck = UnoDeck,
+            StockPile = StockPile,
+            PlayersList = PlayersList,
+            CardColorChoice = CardColorChoice,
+            IsColorChosen = IsColorChosen,
+            SelectedCardIndex = SelectedCardIndex
+        };
+    }
+    
+    public static void LoadFromJson(string jsonString)
+    {
+        var gameStateData = JsonOptions.LoadFromJson(jsonString);
 
+        GameDirection = gameStateData.GameDirection;
+        CurrentPlayerIndex = gameStateData.CurrentPlayerIndex;
+        UnoDeck = gameStateData.UnoDeck;
+        StockPile = gameStateData.StockPile;
+        PlayersList = gameStateData.PlayersList;
+        CardColorChoice = gameStateData.CardColorChoice;
+        IsColorChosen = gameStateData.IsColorChosen;
+        SelectedCardIndex = gameStateData.SelectedCardIndex;
+    }
+    
 }

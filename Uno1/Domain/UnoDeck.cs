@@ -1,70 +1,83 @@
-﻿namespace Domain;
-
-
-public class UnoDeck
+﻿namespace Domain
 {
-    private static UnoCard[]? Deck;
-    public int CardsInDeck;
-
-    public UnoDeck()
+    public class UnoDeck
     {
-        Deck = new UnoCard[108];
-        CardsInDeck = 0;
-    }
-
-    public void Create()
-    {
-        CardsInDeck = 0;
-        UnoCard.Color[] colors = { UnoCard.Color.Red, UnoCard.Color.Blue, UnoCard.Color.Green, UnoCard.Color.Yellow };
-
-        foreach (var color in colors)
+        private UnoCard[]? Deck = new UnoCard[108];
+        public List<UnoCard> Cards { get; private set; } = new();
+        
+        public UnoCard[] SerializedCards
         {
-            Deck![CardsInDeck++] = new UnoCard(color, UnoCard.Value.Zero);
+            get => Cards.ToArray();
+            set => Cards = value.ToList();
+        }
+        
 
-            for (var j = 1; j <= 9; j++)
+        public void Create()
+        {
+            Cards.Clear();
+            UnoCard.Color[] colors = { UnoCard.Color.Red, UnoCard.Color.Blue, UnoCard.Color.Green, UnoCard.Color.Yellow };
+
+            foreach (var color in colors)
             {
-                Deck[CardsInDeck++] = new UnoCard(color, (UnoCard.Value)j);
-                Deck[CardsInDeck++] = new UnoCard(color, (UnoCard.Value)j);
+                AddCardToDeck(new UnoCard(color, UnoCard.Value.Zero));
+
+                for (var j = 1; j <= 9; j++)
+                {
+                    AddCardToDeck(new UnoCard(color, (UnoCard.Value)j));
+                    AddCardToDeck(new UnoCard(color, (UnoCard.Value)j));
+                }
+
+                UnoCard.Value[] values = { UnoCard.Value.DrawTwo, UnoCard.Value.Skip, UnoCard.Value.Reverse };
+                foreach (var value in values)
+                {
+                    AddCardToDeck(new UnoCard(color, value));
+                    AddCardToDeck(new UnoCard(color, value));
+                }
             }
 
-            UnoCard.Value[] values = { UnoCard.Value.DrawTwo, UnoCard.Value.Skip, UnoCard.Value.Reverse };
-            foreach (var value in values)
+            for (var i = 0; i < 4; i++) // Four Wild and WildFour cards
             {
-                Deck[CardsInDeck++] = new UnoCard(color, value);
-                Deck[CardsInDeck++] = new UnoCard(color, value);
+                AddCardToDeck(new UnoCard(UnoCard.Color.Wild, UnoCard.Value.Wild));
+                AddCardToDeck(new UnoCard(UnoCard.Color.Wild, UnoCard.Value.WildFour));
             }
         }
 
-        for (var i = 0; i < 4; i++) // Four Wild and WildFour cards
+        private void AddCardToDeck(UnoCard card)
         {
-            Deck![CardsInDeck++] = new UnoCard(UnoCard.Color.Wild, UnoCard.Value.Wild);
-            Deck[CardsInDeck++] = new UnoCard(UnoCard.Color.Wild, UnoCard.Value.WildFour);
+            Deck = Deck.Append(card).ToArray();
+            Cards.Add(card);
         }
-    }
 
-    public bool IsEmpty()
-    {
-        return CardsInDeck == 0;
-    }
-
-    public void Shuffle()
-    {
-        var n = Deck!.Length;
-        Random random = new Random();
-
-        for (var i = 0; i < Deck.Length; i++)
+        public bool IsEmpty()
         {
-            var randomValue = random.Next(n - 1);
-            (Deck[i], Deck[randomValue]) = (Deck[randomValue], Deck[i]);
+            return Cards.Count == 0;
         }
-    }
 
-    public UnoCard DrawCard()
-    {
-        if (IsEmpty())
+        public void Shuffle()
         {
-            throw new InvalidOperationException("Cannot draw a card since there are no cards in the deck.");
+            Deck = Cards.ToArray();
+            var n = Deck.Length;
+            Random random = new Random();
+
+            for (var i = 0; i < Deck.Length; i++)
+            {
+                var randomValue = random.Next(n - 1);
+                (Deck[i], Deck[randomValue]) = (Deck[randomValue], Deck[i]);
+            }
+
+            Cards = Deck.ToList();
         }
-        return Deck![--CardsInDeck];
+
+        public UnoCard DrawCard()
+        {
+            if (IsEmpty())
+            {
+                throw new InvalidOperationException("Cannot draw a card since there are no cards in the deck.");
+            }
+
+            var card = Cards.Last();
+            Cards.RemoveAt(Cards.Count - 1);
+            return card;
+        }
     }
 }

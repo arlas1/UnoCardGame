@@ -28,8 +28,8 @@ public static class Menu
 
                 Console.ResetColor();
             }
+            
             Console.WriteLine("=======================");
-
 
             key = Console.ReadKey();
 
