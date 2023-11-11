@@ -2,7 +2,6 @@
 
 public class GameStateData
 {
-    //public int GameId { get; set; }
     public bool GameDirection { get; set; }
     public int CurrentPlayerIndex { get; set; }
     public UnoDeck UnoDeck { get; set; }

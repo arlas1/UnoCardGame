@@ -42,7 +42,7 @@
             }
         }
 
-        private void AddCardToDeck(UnoCard card)
+        public void AddCardToDeck(UnoCard card)
         {
             Deck = Deck.Append(card).ToArray();
             Cards.Add(card);
@@ -78,6 +78,12 @@
             var card = Cards.Last();
             Cards.RemoveAt(Cards.Count - 1);
             return card;
+        }
+
+        public void Clear()
+        {
+            Cards.Clear();
+            Deck = Cards.ToArray();
         }
     }
 }

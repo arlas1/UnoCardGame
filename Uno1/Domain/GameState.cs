@@ -2,7 +2,6 @@
 
 public static class GameState
 {
-    //public static int GameId = 0;
     public static bool GameDirection { get; set; }
     public static int CurrentPlayerIndex { get; set; } = 0;
     
@@ -20,7 +19,6 @@ public static class GameState
     {
         return new GameStateData
         {
-            //GameId = GameId,
             GameDirection = GameDirection,
             CurrentPlayerIndex = CurrentPlayerIndex,
             UnoDeck = UnoDeck,

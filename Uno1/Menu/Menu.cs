@@ -12,7 +12,7 @@ public static class Menu
         do
         {
             Console.Clear();
-            //Console.WriteLine(">> U N O <<");
+            
             Console.WriteLine(">>  Welcome to UNO!  <<");
             Console.WriteLine("=======================");
 

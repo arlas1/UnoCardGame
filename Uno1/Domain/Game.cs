@@ -197,14 +197,19 @@ public static class Game
         while (!exitGame)
         {
             DisplayGameHeader();
-
+            
             var currentPlayerHand = GameState.PlayersList[GameState.CurrentPlayerIndex].Hand;
 
             FirstDisplay(currentPlayerHand);
-
+                
             ConsoleKeyInfo key;
+            
             do
             {
+                while (Console.KeyAvailable)
+                {
+                    Console.ReadKey(true);
+                }
                 
                 key = Console.ReadKey();
 
@@ -214,7 +219,7 @@ public static class Game
                         GameState.SelectedCardIndex = (GameState.SelectedCardIndex - 1 + currentPlayerHand.Count + 2) % (currentPlayerHand.Count + 2);
                         break;
                     case ConsoleKey.DownArrow:
-                        GameState.SelectedCardIndex = (GameState.SelectedCardIndex + 1) % (currentPlayerHand.Count + 2);
+                        GameState.SelectedCardIndex = (GameState.SelectedCardIndex + 1) % (currentPlayerHand.Count + 1);
                         break;
                 }
 
@@ -256,13 +261,13 @@ public static class Game
             if (key.Key == ConsoleKey.RightArrow)
             {
                 JsonOptions.SaveIntoJson();
-                Menu.Menu.RunMenu(NewOrLoadGame.NewGame, NewOrLoadGame.LoadGame);
+                Menu.Menu.RunMenu(NewOrLoadGame.NewGame, NewOrLoadGame.LoadGameJson);
                 
                 exitGame = true; // Exit the game loop
             } 
             if (key.Key == ConsoleKey.LeftArrow)
             {
-                Menu.Menu.RunMenu(NewOrLoadGame.NewGame, NewOrLoadGame.LoadGame);
+                Menu.Menu.RunMenu(NewOrLoadGame.NewGame, NewOrLoadGame.LoadGameJson);
                 
                 exitGame = true; // Exit the game loop
             }
@@ -411,9 +416,9 @@ public static class Game
         GameState.CardColorChoice = (UnoCard.Color)selectedIndex;
         GameState.IsColorChosen = true;
     }
-
     
-    // First display of hand (weird logic)
+    
+    // Weird first display
     private static void FirstDisplay(IReadOnlyList<UnoCard> currentPlayerHand)
     {
         Console.WriteLine($"Player {GameState.CurrentPlayerIndex + 1}'s hand:");
