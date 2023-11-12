@@ -1,4 +1,4 @@
-﻿using Menu;
+﻿using System.Text;
 
 namespace Domain;
 
@@ -7,34 +7,10 @@ public static class Game
     // Asking Players amount
     public static int PromptForNumberOfPlayers()
     {
-        int numPlayers;
-
-        while (true)
-        {
-            Console.WriteLine("Enter amount of players (2-7). 2 if Enter is pressed: ");
-            var input = Console.ReadLine()!;
-
-            if (string.IsNullOrWhiteSpace(input))
-            {
-                // User pressed Enter; use the default value
-                numPlayers = 2;
-                Console.Clear();
-                break;
-            }
-
-            if (int.TryParse(input, out numPlayers) && numPlayers is >= 2 and <= 7)
-            {
-                Console.Clear();
-                break; // Valid input, exit the loop
-            }
-
-            Console.Clear();
-        }
-
-        return numPlayers;
+        return (int)GetValidatedInput(0, 1, "");
     }
 
-    
+
     // Create players with user input names
     public static void CreatePlayers(int numPlayers)
     {
@@ -42,40 +18,14 @@ public static class Game
 
         for (var i = 0; i < numPlayers; i++)
         {
-            Console.WriteLine($"Enter player's {i + 1} nickname (Within 20 characters):");
-            Console.WriteLine("Enter / wrong input --> nickname = Player's number");
-
-            var playerName = Console.ReadLine();
-
-            if (string.IsNullOrWhiteSpace(playerName) || playerName.Length > 20)
-            {
-                playerName = $"Player {i + 1}";
-                Console.Clear();
-            }
-
-            Console.Clear();
-
-            string playerTypeInput;
-
-            while (true)
-            {
-                Console.WriteLine($"Enter player's {playerName} type (Human/Ai) [h/a]:");
-                Console.WriteLine("If Enter is pressed - Human");
-                playerTypeInput = Console.ReadLine()!.ToLower();
-
-                if (playerTypeInput == "h" || playerTypeInput == "a" || string.IsNullOrWhiteSpace(playerTypeInput))
-                {
-                    Console.Clear();
-                    break;
-                }
-
-                Console.Clear();
-            }
-
+            var playerName = (string)GetValidatedInput(i, 2, "");
+            var playerTypeInput = (string)GetValidatedInput(i, 3, playerName);
+            
+            
             var playerType = playerTypeInput == "a" ? Player.PlayerType.Ai : Player.PlayerType.Human;
             var player = new Player(i, playerName, playerType);
-
-
+            
+            
             for (var j = 0; j < 7; j++)
             {
                 var drawnCard = GameState.UnoDeck.DrawCard();
@@ -88,7 +38,7 @@ public static class Game
         GameState.PlayersList = players;
     }
 
-    
+
     // Check first stockpile card for type (Wild, Reverse, Skip, +2, +4)
     public static void CheckFirstCard(UnoDeck unoDeck, List<UnoCard> stockPile)
     {
@@ -99,7 +49,7 @@ public static class Game
             var initialCard = unoDeck.DrawCard();
 
             // Invalid card types for the start
-            if (initialCard.CardValue is 
+            if (initialCard.CardValue is
                 UnoCard.Value.Wild or
                 UnoCard.Value.DrawTwo or
                 UnoCard.Value.WildFour or
@@ -109,87 +59,15 @@ public static class Game
                 isValid = false;
             }
             else
-            { 
+            {
                 stockPile.Add(initialCard);
                 break;
             }
         }
     }
 
-    
-    // First Level of card placement control
-    private static bool IsValidCardPlay(UnoCard card)
-    {
-        if (GameState.StockPile.Last().CardColor == UnoCard.Color.Wild && GameState.StockPile.Last().CardValue == UnoCard.Value.Wild)
-        {
-            return card.CardColor == GameState.CardColorChoice;
-        }
-        
-        return (card.CardColor == GameState.StockPile.Last().CardColor ||
-                card.CardValue == GameState.StockPile.Last().CardValue ||
-                UnoCard.Color.Wild == GameState.StockPile.Last().CardColor ||
-                card.CardColor == UnoCard.Color.Wild);
-    }
 
-    
-    // For the main game loop to switch the players
-    private static void GetNextPlayerId(int pId, int numPlayers)
-    {
-        if ((GameState.StockPile.Last().CardValue == UnoCard.Value.Skip))
-        {
-            if (!GameState.GameDirection)
-            {
-                // Move forward if skip
-                GameState.CurrentPlayerIndex = (pId + 2) % numPlayers;
-
-            }
-            else
-            {
-                // Move backward if skip
-                GameState.CurrentPlayerIndex = (pId - 2 + numPlayers) % numPlayers;            }
-        }
-        else
-        {
-            if (!GameState.GameDirection)
-            {
-                // Move forward
-                GameState.CurrentPlayerIndex = (pId + 1) % numPlayers;
-            }
-            else
-            {
-                // Move backward
-                GameState.CurrentPlayerIndex = (pId - 1 + numPlayers) % numPlayers;            }
-        }
-    }
-    
-    
-    // Display game state with every player hand 
-    private static void DisplayGameHeader()
-    {
-        if (GameState.UnoDeck.IsEmpty())
-        {
-            GameState.UnoDeck.Create();
-            GameState.UnoDeck.Shuffle();
-        }
-            
-        Console.Clear();
-        if (GameState.IsColorChosen)
-        {
-            Console.WriteLine("=======================");
-            Console.WriteLine($"Wild card color: {GameState.CardColorChoice}");
-        }
-        Console.WriteLine("=======================");
-        Console.WriteLine("Game direction: " + (GameState.GameDirection ? "Counterclockwise" : "Clockwise"));
-        Console.WriteLine("=======================");
-        Console.WriteLine("Cards in deck left: " + GameState.UnoDeck.Cards.Count);
-        Console.WriteLine("=======================");
-        Console.WriteLine("Top card --> " + GameState.StockPile.Last() + " <--");
-        Console.WriteLine("=======================");
-        
-    }
-    
-    
-    // Main part of the game, loop
+    // Main loop of the game
     public static void StartTheGame(int numPlayers)
     {
         bool exitGame = false;
@@ -197,26 +75,28 @@ public static class Game
         while (!exitGame)
         {
             DisplayGameHeader();
-            
+
             var currentPlayerHand = GameState.PlayersList[GameState.CurrentPlayerIndex].Hand;
 
-            FirstDisplay(currentPlayerHand);
-                
+            DisplayPlayerHand(currentPlayerHand);
+
             ConsoleKeyInfo key;
-            
+
             do
             {
+
                 while (Console.KeyAvailable)
                 {
                     Console.ReadKey(true);
                 }
-                
+
                 key = Console.ReadKey();
 
                 switch (key.Key)
                 {
                     case ConsoleKey.UpArrow:
-                        GameState.SelectedCardIndex = (GameState.SelectedCardIndex - 1 + currentPlayerHand.Count + 2) % (currentPlayerHand.Count + 2);
+                        GameState.SelectedCardIndex = (GameState.SelectedCardIndex - 1 + currentPlayerHand.Count + 2) %
+                                                      (currentPlayerHand.Count + 2);
                         break;
                     case ConsoleKey.DownArrow:
                         GameState.SelectedCardIndex = (GameState.SelectedCardIndex + 1) % (currentPlayerHand.Count + 1);
@@ -226,7 +106,7 @@ public static class Game
                 Console.Clear();
                 DisplayGameHeader();
 
-                Console.WriteLine($"Player {GameState.CurrentPlayerIndex + 1}'s hand:");
+                Console.WriteLine($"{GameState.PlayersList[GameState.CurrentPlayerIndex].Name}'s hand:");
                 for (var i = 0; i < currentPlayerHand.Count; i++)
                 {
                     if (i == GameState.SelectedCardIndex)
@@ -249,29 +129,36 @@ public static class Game
                 Console.WriteLine($"{currentPlayerHand.Count + 1}. -> draw a card <-");
 
                 Console.ResetColor();
-                
+
                 Console.WriteLine("=======================");
                 Console.WriteLine("Press RIGHT ARROW to SAVE and EXIT to the main menu.");
                 Console.WriteLine("                        OR");
                 Console.WriteLine("Press LEFT ARROW to EXIT without saving game state.");
 
 
-            } while (key.Key != ConsoleKey.Enter && key.Key != ConsoleKey.RightArrow && key.Key != ConsoleKey.LeftArrow);
+            } while (key.Key != ConsoleKey.Enter && key.Key != ConsoleKey.RightArrow &&
+                     key.Key != ConsoleKey.LeftArrow);
 
             if (key.Key == ConsoleKey.RightArrow)
             {
                 JsonOptions.SaveIntoJson();
                 Menu.Menu.RunMenu(NewOrLoadGame.NewGame, NewOrLoadGame.LoadGameJson);
-                
+
+                // DbOptions.SaveIntoDb();
+                // Menu.Menu.RunMenu(NewOrLoadGame.NewGame, DbLoadNewGame.LoadNewGameDb);
+
                 exitGame = true; // Exit the game loop
-            } 
+            }
+
             if (key.Key == ConsoleKey.LeftArrow)
             {
                 Menu.Menu.RunMenu(NewOrLoadGame.NewGame, NewOrLoadGame.LoadGameJson);
-                
+
+                // Menu.Menu.RunMenu(NewOrLoadGame.NewGame, DbLoadNewGame.LoadNewGameDb);
+
                 exitGame = true; // Exit the game loop
             }
-            
+
             else
             {
                 var pId = GameState.CurrentPlayerIndex;
@@ -294,9 +181,9 @@ public static class Game
 
                         if (GameState.PlayersList[pId].Hand.Count == 0)
                         {
-                            Console.WriteLine($"{GameState.PlayersList[GameState.CurrentPlayerIndex + 1].Name} wins! Congratulations!");
+                            Console.WriteLine(
+                                $"{GameState.PlayersList[GameState.CurrentPlayerIndex + 1].Name} wins! Congratulations!");
                             GameState.IsColorChosen = false;
-                            exitGame = true; // Set the flag to exit the game loop
                             break;
                         }
 
@@ -306,6 +193,7 @@ public static class Game
                         {
                             GameState.IsColorChosen = false;
                         }
+
                         isValid = true;
                     }
                 }
@@ -321,18 +209,94 @@ public static class Game
             }
         }
     }
-    
-    
+
+
+    // First Level of card placement control
+    private static bool IsValidCardPlay(UnoCard card)
+    {
+        if (GameState.StockPile.Last().CardColor == UnoCard.Color.Wild &&
+            GameState.StockPile.Last().CardValue == UnoCard.Value.Wild)
+        {
+            return card.CardColor == GameState.CardColorChoice;
+        }
+
+        return (card.CardColor == GameState.StockPile.Last().CardColor ||
+                card.CardValue == GameState.StockPile.Last().CardValue ||
+                UnoCard.Color.Wild == GameState.StockPile.Last().CardColor ||
+                card.CardColor == UnoCard.Color.Wild);
+    }
+
+
+    // For the main game loop to switch the players
+    private static void GetNextPlayerId(int pId, int numPlayers)
+    {
+        if ((GameState.StockPile.Last().CardValue == UnoCard.Value.Skip))
+        {
+            if (!GameState.GameDirection)
+            {
+                // Move forward if skip
+                GameState.CurrentPlayerIndex = (pId + 2) % numPlayers;
+
+            }
+            else
+            {
+                // Move backward if skip
+                GameState.CurrentPlayerIndex = (pId - 2 + numPlayers) % numPlayers;
+            }
+        }
+        else
+        {
+            if (!GameState.GameDirection)
+            {
+                // Move forward
+                GameState.CurrentPlayerIndex = (pId + 1) % numPlayers;
+            }
+            else
+            {
+                // Move backward
+                GameState.CurrentPlayerIndex = (pId - 1 + numPlayers) % numPlayers;
+            }
+        }
+    }
+
+
+    // Display game state with every player hand 
+    private static void DisplayGameHeader()
+    {
+        if (GameState.UnoDeck.IsEmpty())
+        {
+            GameState.UnoDeck.Create();
+            GameState.UnoDeck.Shuffle();
+        }
+
+        Console.Clear();
+        if (GameState.IsColorChosen)
+        {
+            Console.WriteLine("=======================");
+            Console.WriteLine($"Wild card color: {GameState.CardColorChoice}");
+        }
+
+        Console.WriteLine("=======================");
+        Console.WriteLine("Game direction: " + (GameState.GameDirection ? "Counterclockwise" : "Clockwise"));
+        Console.WriteLine("=======================");
+        Console.WriteLine("Cards in deck left: " + GameState.UnoDeck.Cards.Count);
+        Console.WriteLine("=======================");
+        Console.WriteLine("Top card --> " + GameState.StockPile.Last() + " <--");
+        Console.WriteLine("=======================");
+
+    }
+
+
     // Apply card logic after it being placed
     private static void SubmitPlayerCard(UnoCard card, int pId, int numPlayers)
     {
-        
+
         if (card.CardValue == UnoCard.Value.Reverse)
         {
             GameState.GameDirection = !GameState.GameDirection;
-            
+
         }
-        
+
         if (card is { CardColor: UnoCard.Color.Wild, CardValue: UnoCard.Value.Wild })
         {
             HandleWildCard();
@@ -344,7 +308,7 @@ public static class Game
             {
                 GameState.PlayersList[(pId + 1) % numPlayers].Hand.Add(GameState.UnoDeck.DrawCard());
                 GameState.PlayersList[(pId + 1) % numPlayers].Hand.Add(GameState.UnoDeck.DrawCard());
-                
+
             }
             else
             {
@@ -372,7 +336,7 @@ public static class Game
         }
     }
 
-    
+
     // Handle wild card being placed
     private static void HandleWildCard()
     {
@@ -416,12 +380,12 @@ public static class Game
         GameState.CardColorChoice = (UnoCard.Color)selectedIndex;
         GameState.IsColorChosen = true;
     }
-    
-    
+
+
     // Weird first display
-    private static void FirstDisplay(IReadOnlyList<UnoCard> currentPlayerHand)
+    private static void DisplayPlayerHand(IReadOnlyList<UnoCard> currentPlayerHand)
     {
-        Console.WriteLine($"Player {GameState.CurrentPlayerIndex + 1}'s hand:");
+        Console.WriteLine($"{GameState.PlayersList[GameState.CurrentPlayerIndex].Name}'s hand:");
         GameState.SelectedCardIndex = 0;
         for (var i = 0; i < currentPlayerHand.Count; i++)
         {
@@ -443,9 +407,9 @@ public static class Game
         }
 
         Console.WriteLine($"{currentPlayerHand.Count + 1}. -> draw a card <-");
-        
+
         Console.ResetColor();
-        
+
         Console.WriteLine("=======================");
         Console.WriteLine("Press RIGHT ARROW to SAVE and EXIT to the main menu.");
         Console.WriteLine("                        OR");
@@ -453,4 +417,147 @@ public static class Game
 
     }
     
+    
+    // Validate the input when creating the players
+    private static object GetValidatedInput(int playerIndex, int caseOfUsage, string playerNameInput)
+    {
+        object playerInput = null!;
+
+        if (caseOfUsage == 1)
+        {
+            int numPlayers;
+            var input = string.Empty;
+
+            while (true)
+            {
+                Console.Write("Enter amount of players [2-7]. Press Enter for 2: ");
+                Console.Write(input);
+
+                var key = Console.ReadKey(intercept: true);
+
+                // Enter pressed
+                if (key.Key == ConsoleKey.Enter)
+                {
+                    if (string.IsNullOrWhiteSpace(input))
+                    {
+                        numPlayers = 2;
+                        Console.Clear();
+                        break;
+                    }
+
+                    if (int.TryParse(input, out numPlayers) && numPlayers is >= 2 and <= 7)
+                    {
+                        Console.Clear();
+                        break; // Valid input, exit the loop
+                    }
+                }
+                else if (key.Key == ConsoleKey.Backspace && input.Length > 0)
+                {
+                    // Handle backspace to delete the last character
+                    input = input[..^1];
+                    Console.Write("\b \b"); // Move the cursor back and overwrite the character with a space
+                }
+                else if (char.IsDigit(key.KeyChar) && input.Length < 1)
+                {
+                    // Allow only the first digit within the specified range
+                    var enteredDigit = int.Parse(key.KeyChar.ToString());
+                    if (enteredDigit is >= 2 and <= 7)
+                    {
+                        input += key.KeyChar;
+                        Console.Write(key.KeyChar);
+                    }
+                }
+
+                Console.Clear();
+            }
+
+            playerInput = numPlayers;
+        }
+        else if (caseOfUsage == 2)
+        {
+            Console.Write($"Enter Player {playerIndex + 1} nickname (Within 20 characters): ");
+
+            var playerNameBuilder = new StringBuilder();
+
+            while (true)
+            {
+                var key = Console.ReadKey(true);
+
+                if (key.Key == ConsoleKey.Enter)
+                {
+                    break;
+                }
+
+                if (key.Key == ConsoleKey.Backspace && playerNameBuilder.Length > 0)
+                {
+                    // Handle backspace to delete the last character
+                    playerNameBuilder.Remove(playerNameBuilder.Length - 1, 1);
+                    Console.Write("\b \b"); // Move the cursor back and overwrite the character with a space
+                }
+                else if (!char.IsControl(key.KeyChar) && playerNameBuilder.Length < 20)
+                {
+                    // Allow only printable characters and limit the input to 20 characters
+                    playerNameBuilder.Append(key.KeyChar);
+                    Console.Write(key.KeyChar);
+                }
+
+            }
+
+            var playerName = playerNameBuilder.ToString().Trim();
+            if (string.IsNullOrWhiteSpace(playerName))
+            {
+                playerName = $"Player {playerIndex + 1}";
+            }
+
+            Console.Clear();
+
+            playerInput = playerName;
+        }
+        else if (caseOfUsage == 3)
+        {
+            string input = string.Empty;
+
+            while (true)
+            {
+                Console.WriteLine($"Enter Player's {playerNameInput} type (Human/Ai) [h/a]. Press Enter for human:");
+                Console.Write(input);
+
+                var key = Console.ReadKey(intercept: true);
+
+                // Enter pressed
+                if (key.Key == ConsoleKey.Enter)
+                {
+                    if (string.IsNullOrWhiteSpace(input))
+                    {
+                        playerInput = "h";
+                        Console.Clear();
+                        break;
+                    }
+                    
+                    if (input.Contains('h') || input.Contains('a'))
+                    {
+                        playerInput = input.Trim().ToLower(); // Valid input, exit the loop
+                        Console.Clear();
+                        break;
+                    }
+                }
+                else if (key.Key == ConsoleKey.Backspace && input.Length > 0)
+                {
+                    // Handle backspace to delete the last character
+                    input = input[..^1];
+                    Console.Write("\b \b"); // Move the cursor back and overwrite the character with a space
+                }
+                else if (key.KeyChar is 'h' or 'a' && input.Length < 1)
+                {
+                    // Allow only the first character (h or a)
+                    input += key.KeyChar;
+                    Console.Write(key.KeyChar);
+                }
+
+                Console.Clear();
+            }
+        }
+        
+        return playerInput;
+    }
 }

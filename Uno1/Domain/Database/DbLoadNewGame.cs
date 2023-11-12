@@ -1,13 +1,32 @@
 ﻿using Domain;
+using Domain.Database;
+using Microsoft.EntityFrameworkCore;
+using GameState = Domain.GameState;
 
-namespace DAL;
+namespace Domain.Database;
 
-public static class DbLoadGame
+public static class DbLoadNewGame
 {
-
-    public static string? LoadNewGameDb(AppDbContext context)
+    public static AppDbContext GetContext()
     {
-        // Fetch the list of saved games from the database
+        var connectionString =
+            "Server=barrel.itcollege.ee;User Id=student;Password=Student.Pass.1;Database=student_arlasi;MultipleActiveResultSets=true";
+
+        var contextOptions = new DbContextOptionsBuilder<AppDbContext>()
+            .UseSqlServer(connectionString)
+            .EnableDetailedErrors()
+            .EnableSensitiveDataLogging()
+            .Options;
+
+        return new AppDbContext(contextOptions);
+
+    }
+    
+    
+    public static string? LoadNewGameDb()
+    {
+        var context = GetContext();
+        // Get the list of saved games from the database
         var savedGames = context.GameStates.ToList();
         if (savedGames.Count == 0)
         {
@@ -58,7 +77,7 @@ public static class DbLoadGame
         DbOptions.LoadFromDb(selectedGameState.Id);
 
         // Continue the game from the loaded state
-        Game.StartTheGame(GameState.PlayersList.Count);
+        Game.StartTheGame(Domain.GameState.PlayersList.Count);
 
         return null;
     }

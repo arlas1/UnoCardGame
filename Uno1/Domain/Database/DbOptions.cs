@@ -1,23 +1,30 @@
-﻿using GameState = Domain.Database.GameState;
-using Player = Domain.Database.Player;
-using Hand = Domain.Database.Hand;
-using UnoDeck = Domain.Database.UnoDeck;
-using StockPile = Domain.Database.StockPile;
+﻿using Microsoft.EntityFrameworkCore;
+namespace Domain.Database;
 
-namespace DAL;
-
-public class DbOptions
+public static class DbOptions
 {
-    public static AppDbContext Context;
-
-    public DbOptions(AppDbContext context)
+    
+    // Get context from the db
+    public static AppDbContext GetContext()
     {
-        Context = context;
+        var connectionString =
+            "Server=barrel.itcollege.ee;User Id=student;Password=Student.Pass.1;Database=student_arlasi;MultipleActiveResultSets=true";
+
+        var contextOptions = new DbContextOptionsBuilder<AppDbContext>()
+            .UseSqlServer(connectionString)
+            .EnableDetailedErrors()
+            .EnableSensitiveDataLogging()
+            .Options;
+        return new AppDbContext(contextOptions);
+        
     }
+
 
     // Save to the db
     public static void SaveIntoDb()
     {
+        var context = GetContext();
+        
         var gameStateEntity = new GameState()
         {
             GameDirection = Domain.GameState.GameDirection ? 1 : 0,
@@ -26,8 +33,8 @@ public class DbOptions
             SelectedCardIndex = Domain.GameState.SelectedCardIndex
         };
 
-        Context.GameStates.Add(gameStateEntity);
-        Context.SaveChanges(); // Save changes to get the ID
+        context.GameStates.Add(gameStateEntity);
+        context.SaveChanges(); // Save changes to get the ID
 
         foreach (var player in Domain.GameState.PlayersList)
         {
@@ -38,8 +45,8 @@ public class DbOptions
                 GameStateId = gameStateEntity.Id
             };
 
-            Context.Players.Add(playerEntity);
-            Context.SaveChanges(); // Save changes to get the ID
+            context.Players.Add(playerEntity);
+            context.SaveChanges(); // Save changes to get the ID
 
             foreach (var card in player.Hand)
             {
@@ -51,7 +58,7 @@ public class DbOptions
                     GameStateId = gameStateEntity.Id
                 };
 
-                Context.Hands.Add(handEntity);
+                context.Hands.Add(handEntity);
             }
         }
 
@@ -64,7 +71,7 @@ public class DbOptions
                 GameStateId = gameStateEntity.Id
             };
 
-            Context.StockPiles.Add(stockPileEntity);
+            context.StockPiles.Add(stockPileEntity);
         }
 
         foreach (var card in Domain.GameState.UnoDeck.SerializedCards)
@@ -76,17 +83,19 @@ public class DbOptions
                 GameStateId = gameStateEntity.Id
             };
 
-            Context.UnoDecks.Add(unoDeckEntity);
+            context.UnoDecks.Add(unoDeckEntity);
         }
 
-        Context.SaveChanges();
+        context.SaveChanges();
     }
 
-    // Load to the db
+    // Load from the db
     public static void LoadFromDb(int gameStateId)
     {
-        // Fetch the game state from the database based on the provided ID
-        var gameStateEntity = Context.GameStates.FirstOrDefault(g => g.Id == gameStateId);
+        var context = GetContext();
+        
+        // Get the game state from the database based on the provided ID
+        var gameStateEntity = context.GameStates.FirstOrDefault(g => g.Id == gameStateId);
 
         if (gameStateEntity != null)
         {
@@ -96,8 +105,8 @@ public class DbOptions
             Domain.GameState.IsColorChosen = gameStateEntity.IsColorChosen == 1;
             Domain.GameState.SelectedCardIndex = gameStateEntity.SelectedCardIndex;
 
-            // Fetch players associated with the game state
-            var players = Context.Players.Where(p => p.GameStateId == gameStateEntity.Id).ToList();
+            // Get players associated with the game state
+            var players = context.Players.Where(p => p.GameStateId == gameStateEntity.Id).ToList();
 
             // Populate the player list in the game state
             Domain.GameState.PlayersList.Clear();
@@ -106,24 +115,24 @@ public class DbOptions
                 var player = new Domain.Player(playerEntity.Id, playerEntity.Name,
                     (Domain.Player.PlayerType)playerEntity.Type);
 
-                // Fetch cards in the player's hand
-                var cardsInHand = Context.Hands
+                // Get cards in the player's hand
+                var cardsInHand = context.Hands
                     .Where(h => h.GameStateId == gameStateEntity.Id && h.PlayerId == playerEntity.Id)
                     .ToList();
 
                 // Populate the player's hand
                 foreach (var cardEntity in cardsInHand)
                 {
-                    var card = new Domain.UnoCard((Domain.UnoCard.Color)cardEntity.CardColor,
-                        (Domain.UnoCard.Value)cardEntity.CardValue);
+                    var card = new UnoCard((UnoCard.Color)cardEntity.CardColor,
+                        (UnoCard.Value)cardEntity.CardValue);
                     player.Hand.Add(card);
                 }
 
                 Domain.GameState.PlayersList.Add(player);
             }
 
-            // Fetch cards in the stock pile
-            var stockPileCards = Context.StockPiles
+            // Get cards in the stock pile
+            var stockPileCards = context.StockPiles
                 .Where(s => s.GameStateId == gameStateEntity.Id)
                 .ToList();
 
@@ -131,13 +140,13 @@ public class DbOptions
             Domain.GameState.StockPile.Clear();
             foreach (var cardEntity in stockPileCards)
             {
-                var card = new Domain.UnoCard((Domain.UnoCard.Color)cardEntity.CardColor,
-                    (Domain.UnoCard.Value)cardEntity.CardValue);
+                var card = new Domain.UnoCard((UnoCard.Color)cardEntity.CardColor,
+                    (UnoCard.Value)cardEntity.CardValue);
                 Domain.GameState.StockPile.Add(card);
             }
 
-            // Fetch cards in the Uno deck
-            var unoDeckCards = Context.UnoDecks
+            // Get cards in the Uno deck
+            var unoDeckCards = context.UnoDecks
                 .Where(u => u.GameStateId == gameStateEntity.Id)
                 .ToList();
 
@@ -145,8 +154,8 @@ public class DbOptions
             Domain.GameState.UnoDeck.Clear();
             foreach (var cardEntity in unoDeckCards)
             {
-                var card = new Domain.UnoCard((Domain.UnoCard.Color)cardEntity.CardColor,
-                    (Domain.UnoCard.Value)cardEntity.CardValue);
+                var card = new UnoCard((UnoCard.Color)cardEntity.CardColor,
+                    (UnoCard.Value)cardEntity.CardValue);
                 Domain.GameState.UnoDeck.AddCardToDeck(card);
             }
         }
