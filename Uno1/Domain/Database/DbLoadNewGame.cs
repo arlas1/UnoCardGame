@@ -9,23 +9,25 @@ public static class DbLoadNewGame
 {
     public static AppDbContext GetContext()
     {
-        var connectionString =
-            "Server=barrel.itcollege.ee;User Id=student;Password=Student.Pass.1;Database=student_arlasi;MultipleActiveResultSets=true";
+        
+        var dbFilePath = @"C:\Users\lasim\RiderProjects\icd0008-23f\Uno1\Domain\Database\UnoDb.db"; // Replace with your actual file path
+        var connectionString = $"Data Source={dbFilePath};";
 
         var contextOptions = new DbContextOptionsBuilder<AppDbContext>()
-            .UseSqlServer(connectionString)
+            .UseSqlite(connectionString)
             .EnableDetailedErrors()
             .EnableSensitiveDataLogging()
             .Options;
 
         return new AppDbContext(contextOptions);
-
     }
     
     
     public static string? LoadNewGameDb()
     {
         var context = GetContext();
+        context.Database.Migrate();
+        
         // Get the list of saved games from the database
         var savedGames = context.GameStates.ToList();
         if (savedGames.Count == 0)

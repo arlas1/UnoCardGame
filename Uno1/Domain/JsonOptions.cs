@@ -15,7 +15,7 @@ public class JsonOptions
         var gameStateData = GameState.GetGameStateData();
         var jsonString = JsonSerializer.Serialize(gameStateData, jsonOptions);
 
-        var jsonFolderPath = @"C:\Users\lasim\RiderProjects\icd0008-23f\Uno1\DAL\JsonSaves/";
+        var jsonFolderPath = @"C:\Users\lasim\RiderProjects\icd0008-23f\Uno1\Domain\Database\JsonSaves/";
             
         // Get the count of existing JSON files in the folder
         int fileIndex = Directory.GetFiles(jsonFolderPath, "*.json").Length + 1;

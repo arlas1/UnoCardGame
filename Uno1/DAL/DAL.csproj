@@ -8,11 +8,6 @@
 
 
     <ItemGroup>
-      <Folder Include="JsonSaves\" />
-    </ItemGroup>
-
-
-    <ItemGroup>
       <ProjectReference Include="..\Domain\Domain.csproj" />
     </ItemGroup>
 

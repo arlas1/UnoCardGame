@@ -24,7 +24,7 @@ public static class NewOrLoadGame
 
     public static string? LoadGameJson()
     {
-        var jsonFolderPath = @"C:\Users\lasim\RiderProjects\icd0008-23f\Uno1\DAL\JsonSaves/";
+        var jsonFolderPath = @"C:\Users\lasim\RiderProjects\icd0008-23f\Uno1\Domain\Database\JsonSaves/";
 
         // Display the list of available saved games
         var savedGames = Directory.GetFiles(jsonFolderPath, "*.json");
