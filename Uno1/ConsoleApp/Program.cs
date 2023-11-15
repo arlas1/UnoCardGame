@@ -12,7 +12,7 @@ public static class Program
                 //Start the menu with JSON repository
                 Menu.Menu.RunMenu(GameSetupLoader.NewGame, GameSetupLoader.LoadGameJson);
                 break;
-            default:
+            case 2:
                 //Start the menu with SQLite repository
                 Menu.Menu.RunMenu(GameSetupLoader.NewGame, GameSetupLoader.LoadGameDb);
                 break;
