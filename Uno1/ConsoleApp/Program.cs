@@ -17,7 +17,7 @@ public static class Program
          // using var db = new AppDbContext(contextOptions);
          // db.Database.Migrate();
          // Console.WriteLine(db);
-
+         
          //Start the menu with JSON
          // Menu.Menu.RunMenu(NewOrLoadGame.NewGame, NewOrLoadGame.LoadGameJson);
          
