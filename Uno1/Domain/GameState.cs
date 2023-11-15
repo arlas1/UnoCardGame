@@ -32,7 +32,7 @@ public static class GameState
     
     public static void LoadFromJson(string jsonString)
     {
-        var gameStateData = JsonOptions.LoadFromJson(jsonString);
+        var gameStateData = JsonRepository.LoadFromJson(jsonString);
 
         GameDirection = gameStateData.GameDirection;
         CurrentPlayerIndex = gameStateData.CurrentPlayerIndex;

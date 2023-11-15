@@ -1,4 +1,4 @@
-﻿namespace Domain.Database;
+﻿namespace DAL.DbEntities;
 
 public class StockPile
 {

@@ -1,7 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Data.Sqlite;
+﻿using DAL.DbEntities;
+using Microsoft.EntityFrameworkCore;
 
-namespace Domain.Database;
+namespace DAL;
 
 
 public class AppDbContext : DbContext
@@ -23,7 +23,7 @@ public class AppDbContext : DbContext
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         
-        var dbFilePath = @"C:\Users\lasim\RiderProjects\icd0008-23f\Uno1\Domain\Database\UnoDb.db"; // Replace with your actual file path
+        var dbFilePath = @"C:\Users\lasim\RiderProjects\icd0008-23f\Uno1\DAL\UnoDb.db"; // Replace with your actual file path
         var connectionString = $"Data Source={dbFilePath};";
         base.OnConfiguring(optionsBuilder);
             

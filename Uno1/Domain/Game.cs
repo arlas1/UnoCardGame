@@ -1,18 +1,16 @@
 ﻿using System.Text;
-using Domain.Database;
 
 namespace Domain;
 
 public static class Game
 {
-    // Asking Players amount
+    
     public static int PromptForNumberOfPlayers()
     {
         return (int)GetValidatedInput(0, 1, "");
     }
-
-
-    // Create players with user input names
+    
+    
     public static void CreatePlayers(int numPlayers)
     {
         var players = new List<Player>();
@@ -38,9 +36,8 @@ public static class Game
 
         GameState.PlayersList = players;
     }
-
-
-    // Check first stockpile card for type (Wild, Reverse, Skip, +2, +4)
+    
+    
     public static void CheckFirstCard(UnoDeck unoDeck, List<UnoCard> stockPile)
     {
         var isValid = false;
@@ -66,12 +63,11 @@ public static class Game
             }
         }
     }
-
-
+    
     // Main loop of the game
     public static void StartTheGame(int numPlayers)
     {
-        bool exitGame = false;
+        var exitGame = false;
 
         while (!exitGame)
         {
@@ -142,20 +138,20 @@ public static class Game
 
             if (key.Key == ConsoleKey.RightArrow)
             {
-                JsonOptions.SaveIntoJson();
-                Menu.Menu.RunMenu(NewOrLoadGame.NewGame, NewOrLoadGame.LoadGameJson);
+                // JsonOptions.SaveIntoJson();
+                // Menu.Menu.RunMenu(NewOrLoadGame.NewGame, NewOrLoadGame.LoadGameJson);
 
-                // DbOptions.SaveIntoDb();
-                // Menu.Menu.RunMenu(NewOrLoadGame.NewGame, DbLoadNewGame.LoadNewGameDb);
+                DbRepository.SaveIntoDb();
+                Menu.Menu.RunMenu(GameSetupLoader.NewGame, GameSetupLoader.LoadGameDb);
 
                 exitGame = true; // Exit the game loop
             }
 
             if (key.Key == ConsoleKey.LeftArrow)
             {
-                Menu.Menu.RunMenu(NewOrLoadGame.NewGame, NewOrLoadGame.LoadGameJson);
+                // Menu.Menu.RunMenu(NewOrLoadGame.NewGame, NewOrLoadGame.LoadGameJson);
 
-                // Menu.Menu.RunMenu(NewOrLoadGame.NewGame, DbLoadNewGame.LoadNewGameDb);
+                Menu.Menu.RunMenu(GameSetupLoader.NewGame, GameSetupLoader.LoadGameDb);
 
                 exitGame = true; // Exit the game loop
             }
@@ -211,8 +207,7 @@ public static class Game
         }
     }
 
-
-    // First Level of card placement control
+    
     private static bool IsValidCardPlay(UnoCard card)
     {
         if (GameState.StockPile.Last().CardColor == UnoCard.Color.Wild &&
@@ -227,8 +222,7 @@ public static class Game
                 card.CardColor == UnoCard.Color.Wild);
     }
 
-
-    // For the main game loop to switch the players
+    
     private static void GetNextPlayerId(int pId, int numPlayers)
     {
         if ((GameState.StockPile.Last().CardValue == UnoCard.Value.Skip))
@@ -260,8 +254,7 @@ public static class Game
         }
     }
 
-
-    // Display game state with every player hand 
+    
     private static void DisplayGameHeader()
     {
         if (GameState.UnoDeck.IsEmpty())
@@ -287,8 +280,8 @@ public static class Game
 
     }
 
-
-    // Apply card logic after it being placed
+    
+    // Apply card logic after placing it
     private static void SubmitPlayerCard(UnoCard card, int pId, int numPlayers)
     {
 
@@ -337,8 +330,7 @@ public static class Game
         }
     }
 
-
-    // Handle wild card being placed
+    
     private static void HandleWildCard()
     {
         var selectedIndex = 0;
@@ -381,8 +373,8 @@ public static class Game
         GameState.CardColorChoice = (UnoCard.Color)selectedIndex;
         GameState.IsColorChosen = true;
     }
-
-
+    
+    
     // Weird first display
     private static void DisplayPlayerHand(IReadOnlyList<UnoCard> currentPlayerHand)
     {
@@ -419,7 +411,6 @@ public static class Game
     }
     
     
-    // Validate the input when creating the players
     private static object GetValidatedInput(int playerIndex, int caseOfUsage, string playerNameInput)
     {
         object playerInput = null!;
@@ -571,4 +562,5 @@ public static class Game
         
         return playerInput;
     }
+    
 }

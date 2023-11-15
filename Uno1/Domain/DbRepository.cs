@@ -1,13 +1,16 @@
-﻿using Microsoft.EntityFrameworkCore;
-namespace Domain.Database;
+﻿using DAL;
+using DAL.DbEntities;
+using Microsoft.EntityFrameworkCore;
 
-public static class DbOptions
+namespace Domain;
+
+public static class DbRepository
 {
     
     // Get context from the db
     public static AppDbContext GetContext()
     {
-        var dbFilePath = @"C:\Users\lasim\RiderProjects\icd0008-23f\Uno1\Domain\Database\UnoDb.db"; // Replace with your actual file path
+        var dbFilePath = @"C:\Users\lasim\RiderProjects\icd0008-23f\Uno1\DAL\UnoDb.db"; // Replace with your actual file path
         var connectionString = $"Data Source={dbFilePath};";
 
         var contextOptions = new DbContextOptionsBuilder<AppDbContext>()
@@ -27,20 +30,20 @@ public static class DbOptions
         var context = GetContext();
         context.Database.Migrate();
         
-        var gameStateEntity = new GameState()
+        var gameStateEntity = new DAL.DbEntities.GameState()
         {
-            GameDirection = Domain.GameState.GameDirection ? 1 : 0,
-            CurrentPlayerIndex = Domain.GameState.CurrentPlayerIndex,
-            IsColorChosen = Domain.GameState.IsColorChosen ? 1 : 0,
-            SelectedCardIndex = Domain.GameState.SelectedCardIndex
+            GameDirection = GameState.GameDirection ? 1 : 0,
+            CurrentPlayerIndex = GameState.CurrentPlayerIndex,
+            IsColorChosen = GameState.IsColorChosen ? 1 : 0,
+            SelectedCardIndex = GameState.SelectedCardIndex
         };
 
         context.GameStates.Add(gameStateEntity);
         context.SaveChanges(); // Save changes to get the ID
 
-        foreach (var player in Domain.GameState.PlayersList)
+        foreach (var player in GameState.PlayersList)
         {
-            var playerEntity = new Player()
+            var playerEntity = new DAL.DbEntities.Player()
             {
                 Name = player.Name,
                 Type = (int)player.Type,
@@ -64,7 +67,7 @@ public static class DbOptions
             }
         }
 
-        foreach (var card in Domain.GameState.StockPile)
+        foreach (var card in GameState.StockPile)
         {
             var stockPileEntity = new StockPile()
             {
@@ -76,9 +79,9 @@ public static class DbOptions
             context.StockPiles.Add(stockPileEntity);
         }
 
-        foreach (var card in Domain.GameState.UnoDeck.SerializedCards)
+        foreach (var card in GameState.UnoDeck.SerializedCards)
         {
-            var unoDeckEntity = new UnoDeck()
+            var unoDeckEntity = new DAL.DbEntities.UnoDeck()
             {
                 CardColor = (int)card.CardColor,
                 CardValue = (int)card.CardValue,
@@ -101,19 +104,19 @@ public static class DbOptions
 
         if (gameStateEntity != null)
         {
-            Domain.GameState.GameDirection = gameStateEntity.GameDirection == 1;
-            Domain.GameState.CurrentPlayerIndex = gameStateEntity.CurrentPlayerIndex;
-            Domain.GameState.IsColorChosen = gameStateEntity.IsColorChosen == 1;
-            Domain.GameState.SelectedCardIndex = gameStateEntity.SelectedCardIndex;
+            GameState.GameDirection = gameStateEntity.GameDirection == 1;
+            GameState.CurrentPlayerIndex = gameStateEntity.CurrentPlayerIndex;
+            GameState.IsColorChosen = gameStateEntity.IsColorChosen == 1;
+            GameState.SelectedCardIndex = gameStateEntity.SelectedCardIndex;
             
             
             var players = context.Players.Where(p => p.GameStateId == gameStateEntity.Id).ToList();
 
-            Domain.GameState.PlayersList.Clear();
+            GameState.PlayersList.Clear();
             foreach (var playerEntity in players)
             {
-                var player = new Domain.Player(playerEntity.Id, playerEntity.Name,
-                    (Domain.Player.PlayerType)playerEntity.Type);
+                var player = new Player(playerEntity.Id, playerEntity.Name,
+                    (Player.PlayerType)playerEntity.Type);
 
                 // By gamestate and player id
                 var cardsInHand = context.Hands
@@ -128,7 +131,7 @@ public static class DbOptions
                     player.Hand.Add(card);
                 }
 
-                Domain.GameState.PlayersList.Add(player);
+                GameState.PlayersList.Add(player);
             }
 
             
@@ -136,12 +139,12 @@ public static class DbOptions
                 .Where(s => s.GameStateId == gameStateEntity.Id)
                 .ToList();
 
-            Domain.GameState.StockPile.Clear();
+            GameState.StockPile.Clear();
             foreach (var cardEntity in stockPileCards)
             {
                 var card = new UnoCard((UnoCard.Color)cardEntity.CardColor,
                     (UnoCard.Value)cardEntity.CardValue);
-                Domain.GameState.StockPile.Add(card);
+                GameState.StockPile.Add(card);
             }
 
             
@@ -149,12 +152,12 @@ public static class DbOptions
                 .Where(u => u.GameStateId == gameStateEntity.Id)
                 .ToList();
 
-            Domain.GameState.UnoDeck.Clear();
+            GameState.UnoDeck.Clear();
             foreach (var cardEntity in unoDeckCards)
             {
                 var card = new UnoCard((UnoCard.Color)cardEntity.CardColor,
                     (UnoCard.Value)cardEntity.CardValue);
-                Domain.GameState.UnoDeck.AddCardToDeck(card);
+                GameState.UnoDeck.AddCardToDeck(card);
             }
         }
     }

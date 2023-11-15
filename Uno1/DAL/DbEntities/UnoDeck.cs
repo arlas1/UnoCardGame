@@ -1,13 +1,11 @@
-﻿namespace Domain.Database;
+﻿namespace DAL.DbEntities;
 
-public class Hand
+public class UnoDeck
 {
     public int Id { get; set; } 
-    
+
     public int CardColor { get; set; } 
     public int CardValue { get; set; } 
     
-    public int PlayerId { get; set; } 
     public int GameStateId { get; set; } 
-
 }

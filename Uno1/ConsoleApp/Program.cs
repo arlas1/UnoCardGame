@@ -1,5 +1,4 @@
 ﻿using Domain;
-using Domain.Database;
 
 namespace ConsoleApp;
 
@@ -19,11 +18,10 @@ public static class Program
          // db.Database.Migrate();
          // Console.WriteLine(db);
 
-         //Start the menu with json db
-         Menu.Menu.RunMenu(NewOrLoadGame.NewGame, NewOrLoadGame.LoadGameJson);
+         //Start the menu with JSON
+         // Menu.Menu.RunMenu(NewOrLoadGame.NewGame, NewOrLoadGame.LoadGameJson);
          
-         //Start the menu with Entity.framework db
-         // Menu.Menu.RunMenu(NewOrLoadGame.NewGame, DbLoadNewGame.LoadNewGameDb);
+         //Start the menu with DB
+         Menu.Menu.RunMenu(GameSetupLoader.NewGame, GameSetupLoader.LoadGameDb);
     }
-    
 }
