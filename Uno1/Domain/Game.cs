@@ -4,6 +4,56 @@ namespace Domain;
 
 public static class Game
 {
+    public static int RepositoryChoice()
+    {
+        int choice;
+        var input = string.Empty;
+        
+        while (true)
+        {
+            Console.Write("Which file system to use? Json/Sqlite [1/2]. Press Enter for json:");
+            Console.Write(input);
+
+            var key = Console.ReadKey(intercept: true);
+
+            // Enter pressed
+            if (key.Key == ConsoleKey.Enter)
+            {
+                if (string.IsNullOrWhiteSpace(input))
+                {
+                    choice = 1;
+                    Console.Clear();
+                    break;
+                }
+
+                if (int.TryParse(input, out choice) && choice is >= 1 and <= 2)
+                {
+                    Console.Clear();
+                    break; // Valid input, exit the loop
+                }
+            }
+            else if (key.Key == ConsoleKey.Backspace && input.Length > 0)
+            {
+                // Handle backspace to delete the last character
+                input = input[..^1];
+                Console.Write("\b \b"); // Move the cursor back and overwrite the character with a space
+            }
+            else if (char.IsDigit(key.KeyChar) && input.Length < 1)
+            {
+                // Allow only the first digit within the specified range
+                var enteredDigit = int.Parse(key.KeyChar.ToString());
+                if (enteredDigit is >= 1 and <= 2)
+                {
+                    input += key.KeyChar;
+                    Console.Write(key.KeyChar);
+                }
+            }
+
+            Console.Clear();
+        }
+
+        return choice;
+    }
     
     public static int PromptForNumberOfPlayers()
     {
@@ -514,7 +564,7 @@ public static class Game
             // Players type
             case 3:
             {
-                string input = string.Empty;
+                var input = string.Empty;
 
                 while (true)
                 {

@@ -53,7 +53,7 @@ public static class GameSetupLoader
                     Console.ForegroundColor = ConsoleColor.Black;
                 }
 
-                Console.WriteLine($"{i + 1}. {Path.GetFileNameWithoutExtension(savedGames[i])}");
+                Console.WriteLine($"Game ID: {Path.GetFileNameWithoutExtension(savedGames[i])}");
 
                 Console.ResetColor();
             }
@@ -116,7 +116,7 @@ public static class GameSetupLoader
                     Console.ForegroundColor = ConsoleColor.Black;
                 }
 
-                Console.WriteLine($"{i + 1}. Game ID: {savedGames[i].Id}");
+                Console.WriteLine($"Game ID: {savedGames[i].Id}");
 
                 Console.ResetColor();
             }
