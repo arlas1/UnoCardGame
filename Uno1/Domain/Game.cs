@@ -55,6 +55,7 @@ public static class Game
         return choice;
     }
     
+    
     public static int PromptForNumberOfPlayers()
     {
         return (int)GetValidatedInput(0, 1, "");
@@ -88,7 +89,7 @@ public static class Game
     }
     
     
-    public static void CheckFirstCard(UnoDeck unoDeck, List<UnoCard> stockPile)
+    public static void CheckFirstCardInGame(UnoDeck unoDeck, List<UnoCard> stockPile)
     {
         var isValid = false;
 
@@ -142,8 +143,16 @@ public static class Game
                 switch (key.Key)
                 {
                     case ConsoleKey.UpArrow:
-                        GameState.SelectedCardIndex = (GameState.SelectedCardIndex - 1 + currentPlayerHand.Count + 2) %
-                                                      (currentPlayerHand.Count + 2);
+                        if (GameState.SelectedCardIndex == 0)
+                        {
+                            // If at the first card, move to the last card
+                            GameState.SelectedCardIndex = currentPlayerHand.Count;
+                        }
+                        else
+                        {
+                            // Move up normally
+                            GameState.SelectedCardIndex = (GameState.SelectedCardIndex - 1) % (currentPlayerHand.Count + 1);
+                        }
                         break;
                     case ConsoleKey.DownArrow:
                         GameState.SelectedCardIndex = (GameState.SelectedCardIndex + 1) % (currentPlayerHand.Count + 1);
@@ -188,8 +197,6 @@ public static class Game
 
             if (key.Key == ConsoleKey.RightArrow)
             {
-                // JsonOptions.SaveIntoJson();
-                // Menu.Menu.RunMenu(NewOrLoadGame.NewGame, NewOrLoadGame.LoadGameJson);
 
                 DbRepository.SaveIntoDb();
                 Menu.Menu.RunMenu(GameSetupLoader.NewGame, GameSetupLoader.LoadGameDb);
@@ -199,7 +206,6 @@ public static class Game
 
             if (key.Key == ConsoleKey.LeftArrow)
             {
-                // Menu.Menu.RunMenu(NewOrLoadGame.NewGame, NewOrLoadGame.LoadGameJson);
 
                 Menu.Menu.RunMenu(GameSetupLoader.NewGame, GameSetupLoader.LoadGameDb);
 
@@ -208,7 +214,7 @@ public static class Game
 
             else
             {
-                var pId = GameState.CurrentPlayerIndex;
+                var playerId = GameState.CurrentPlayerIndex;
 
                 var isValid = false;
 
@@ -226,7 +232,7 @@ public static class Game
                         currentPlayerHand.RemoveAt(GameState.SelectedCardIndex);
                         GameState.StockPile.Add(selectedCard);
 
-                        if (GameState.PlayersList[pId].Hand.Count == 0)
+                        if (GameState.PlayersList[playerId].Hand.Count == 0)
                         {
                             Console.WriteLine(
                                 $"{GameState.PlayersList[GameState.CurrentPlayerIndex + 1].Name} wins! Congratulations!");
@@ -234,7 +240,7 @@ public static class Game
                             break;
                         }
 
-                        SubmitPlayerCard(selectedCard, pId, numPlayers);
+                        SubmitPlayerCard(selectedCard, playerId, numPlayers);
 
                         if (selectedCard.CardColor == GameState.CardColorChoice)
                         {
@@ -252,7 +258,7 @@ public static class Game
                 }
 
                 // Player switch + exclusive control for skip card
-                GetNextPlayerId(pId, numPlayers);
+                GetNextPlayerId(playerId, numPlayers);
             }
         }
     }
@@ -273,20 +279,20 @@ public static class Game
     }
 
     
-    private static void GetNextPlayerId(int pId, int numPlayers)
+    private static void GetNextPlayerId(int playerId, int numPlayers)
     {
         if ((GameState.StockPile.Last().CardValue == UnoCard.Value.Skip))
         {
             if (!GameState.GameDirection)
             {
                 // Move forward if skip
-                GameState.CurrentPlayerIndex = (pId + 2) % numPlayers;
+                GameState.CurrentPlayerIndex = (playerId + 2) % numPlayers;
 
             }
             else
             {
                 // Move backward if skip
-                GameState.CurrentPlayerIndex = (pId - 2 + numPlayers) % numPlayers;
+                GameState.CurrentPlayerIndex = (playerId - 2 + numPlayers) % numPlayers;
             }
         }
         else
@@ -294,12 +300,12 @@ public static class Game
             if (!GameState.GameDirection)
             {
                 // Move forward
-                GameState.CurrentPlayerIndex = (pId + 1) % numPlayers;
+                GameState.CurrentPlayerIndex = (playerId + 1) % numPlayers;
             }
             else
             {
                 // Move backward
-                GameState.CurrentPlayerIndex = (pId - 1 + numPlayers) % numPlayers;
+                GameState.CurrentPlayerIndex = (playerId - 1 + numPlayers) % numPlayers;
             }
         }
     }
@@ -314,6 +320,7 @@ public static class Game
         }
 
         Console.Clear();
+        
         if (GameState.IsColorChosen)
         {
             Console.WriteLine("=======================");
@@ -329,10 +336,10 @@ public static class Game
         Console.WriteLine("=======================");
 
     }
-
+    
     
     // Apply card logic after placing it
-    private static void SubmitPlayerCard(UnoCard card, int pId, int numPlayers)
+    private static void SubmitPlayerCard(UnoCard card, int playerId, int numPlayers)
     {
 
         if (card.CardValue == UnoCard.Value.Reverse)
@@ -343,21 +350,21 @@ public static class Game
 
         if (card is { CardColor: UnoCard.Color.Wild, CardValue: UnoCard.Value.Wild })
         {
-            HandleWildCard();
+            ApplyWildCardLogic();
         }
 
         if (card.CardValue == UnoCard.Value.DrawTwo)
         {
             if (!GameState.GameDirection)
             {
-                GameState.PlayersList[(pId + 1) % numPlayers].Hand.Add(GameState.UnoDeck.DrawCard());
-                GameState.PlayersList[(pId + 1) % numPlayers].Hand.Add(GameState.UnoDeck.DrawCard());
+                GameState.PlayersList[(playerId + 1) % numPlayers].Hand.Add(GameState.UnoDeck.DrawCard());
+                GameState.PlayersList[(playerId + 1) % numPlayers].Hand.Add(GameState.UnoDeck.DrawCard());
 
             }
             else
             {
-                GameState.PlayersList[(pId - 1) % numPlayers].Hand.Add(GameState.UnoDeck.DrawCard());
-                GameState.PlayersList[(pId - 1) % numPlayers].Hand.Add(GameState.UnoDeck.DrawCard());
+                GameState.PlayersList[(playerId - 1) % numPlayers].Hand.Add(GameState.UnoDeck.DrawCard());
+                GameState.PlayersList[(playerId - 1) % numPlayers].Hand.Add(GameState.UnoDeck.DrawCard());
             }
         }
 
@@ -365,23 +372,23 @@ public static class Game
         {
             if (!GameState.GameDirection)
             {
-                GameState.PlayersList[(pId + 1) % numPlayers].Hand.Add(GameState.UnoDeck.DrawCard());
-                GameState.PlayersList[(pId + 1) % numPlayers].Hand.Add(GameState.UnoDeck.DrawCard());
-                GameState.PlayersList[(pId + 1) % numPlayers].Hand.Add(GameState.UnoDeck.DrawCard());
-                GameState.PlayersList[(pId + 1) % numPlayers].Hand.Add(GameState.UnoDeck.DrawCard());
+                GameState.PlayersList[(playerId + 1) % numPlayers].Hand.Add(GameState.UnoDeck.DrawCard());
+                GameState.PlayersList[(playerId + 1) % numPlayers].Hand.Add(GameState.UnoDeck.DrawCard());
+                GameState.PlayersList[(playerId + 1) % numPlayers].Hand.Add(GameState.UnoDeck.DrawCard());
+                GameState.PlayersList[(playerId + 1) % numPlayers].Hand.Add(GameState.UnoDeck.DrawCard());
             }
             else
             {
-                GameState.PlayersList[(pId - 1) % numPlayers].Hand.Add(GameState.UnoDeck.DrawCard());
-                GameState.PlayersList[(pId - 1) % numPlayers].Hand.Add(GameState.UnoDeck.DrawCard());
-                GameState.PlayersList[(pId - 1) % numPlayers].Hand.Add(GameState.UnoDeck.DrawCard());
-                GameState.PlayersList[(pId - 1) % numPlayers].Hand.Add(GameState.UnoDeck.DrawCard());
+                GameState.PlayersList[(playerId - 1) % numPlayers].Hand.Add(GameState.UnoDeck.DrawCard());
+                GameState.PlayersList[(playerId - 1) % numPlayers].Hand.Add(GameState.UnoDeck.DrawCard());
+                GameState.PlayersList[(playerId - 1) % numPlayers].Hand.Add(GameState.UnoDeck.DrawCard());
+                GameState.PlayersList[(playerId - 1) % numPlayers].Hand.Add(GameState.UnoDeck.DrawCard());
             }
         }
     }
 
     
-    private static void HandleWildCard()
+    private static void ApplyWildCardLogic()
     {
         var selectedIndex = 0;
 
@@ -423,7 +430,6 @@ public static class Game
         GameState.CardColorChoice = (UnoCard.Color)selectedIndex;
         GameState.IsColorChosen = true;
     }
-    
     
     // Weird first display
     private static void DisplayPlayerHand(IReadOnlyList<UnoCard> currentPlayerHand)

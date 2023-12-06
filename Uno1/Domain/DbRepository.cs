@@ -10,7 +10,7 @@ public static class DbRepository
     // Get context from the db
     public static AppDbContext GetContext()
     {
-        var dbFilePath = @"C:\Users\lasim\RiderProjects\icd0008-23f\Uno1\DAL\UnoDb.db"; // Replace with your actual file path
+        var dbFilePath = @"C:\Users\lasim\RiderProjects\icd0008-23f\Uno1\DAL\UnoDb.db";
         var connectionString = $"Data Source={dbFilePath};";
 
         var contextOptions = new DbContextOptionsBuilder<AppDbContext>()

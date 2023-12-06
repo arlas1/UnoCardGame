@@ -12,13 +12,13 @@ public class JsonRepository
             AllowTrailingCommas = true,
         };
 
-        var gameStateData = GameState.GetGameStateData();
-        var jsonString = JsonSerializer.Serialize(gameStateData, jsonOptions);
+        var gameStateCopy = GameState.GetGameStateCopy();
+        var jsonString = JsonSerializer.Serialize(gameStateCopy, jsonOptions);
 
-        var jsonFolderPath = @"C:\Users\lasim\RiderProjects\icd0008-23f\Uno1\DAL\JsonSaves/";
+        const string jsonFolderPath = @"C:\Users\lasim\RiderProjects\icd0008-23f\Uno1\DAL\JsonSaves/";
             
         // Get the count of existing JSON files in the folder
-        int fileIndex = Directory.GetFiles(jsonFolderPath, "*.json").Length + 1;
+        var fileIndex = Directory.GetFiles(jsonFolderPath, "*.json").Length + 1;
 
         var filePath = Path.Combine(jsonFolderPath, $"{fileIndex}.json");
 
@@ -26,9 +26,9 @@ public class JsonRepository
     }
     
     
-    public static GameStateData LoadFromJson(string jsonString)
+    public static GameStateCopy LoadFromJson(string jsonString)
     {
-        return JsonSerializer.Deserialize<GameStateData>(jsonString)!;
+        return JsonSerializer.Deserialize<GameStateCopy>(jsonString)!;
     }
     
 }

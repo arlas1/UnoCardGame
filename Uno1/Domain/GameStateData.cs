@@ -1,6 +1,6 @@
 ﻿namespace Domain;
 
-public class GameStateData
+public class GameStateCopy
 {
     public bool GameDirection { get; set; }
     public int CurrentPlayerIndex { get; set; }

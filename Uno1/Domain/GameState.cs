@@ -15,9 +15,10 @@ public static class GameState
     public static bool IsColorChosen { get; set; } = false;
     public static int SelectedCardIndex { get; set; } = -1;
     
-    public static GameStateData GetGameStateData()
+    
+    public static GameStateCopy GetGameStateCopy()
     {
-        return new GameStateData
+        return new GameStateCopy
         {
             GameDirection = GameDirection,
             CurrentPlayerIndex = CurrentPlayerIndex,

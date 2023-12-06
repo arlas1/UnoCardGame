@@ -15,7 +15,7 @@ public static class GameSetupLoader
         Game.CreatePlayers(numPlayers);
 
         // First stockpile card check
-        Game.CheckFirstCard(GameState.UnoDeck, GameState.StockPile);
+        Game.CheckFirstCardInGame(GameState.UnoDeck, GameState.StockPile);
 
         // Main game loop
         Game.StartTheGame(numPlayers);

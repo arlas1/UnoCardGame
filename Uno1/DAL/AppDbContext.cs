@@ -23,8 +23,8 @@ public class AppDbContext : DbContext
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         
-        var dbFilePath = @"C:\Users\lasim\RiderProjects\icd0008-23f\Uno1\DAL\UnoDb.db"; // Replace with your actual file path
-        var connectionString = $"Data Source={dbFilePath};";
+        const string dbFilePath = @"C:\Users\lasim\RiderProjects\icd0008-23f\Uno1\DAL\UnoDb.db";
+        const string connectionString = $"Data Source={dbFilePath};";
         base.OnConfiguring(optionsBuilder);
             
         // Configure SQLite
