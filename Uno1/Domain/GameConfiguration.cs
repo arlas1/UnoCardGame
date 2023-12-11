@@ -2,7 +2,7 @@
 
 namespace Domain;
 
-public static class Game
+public static class GameConfiguration
 {
     public static void PromptForRepositoryType()
     {
@@ -355,7 +355,5 @@ public static class Game
         
         return playerInput;
     }
-    
-    
     
 }

@@ -92,11 +92,11 @@ public static class GameEngine
 
             if (currentPlayer.Type == Player.PlayerType.Human)
             {
-                Game.PromptForWildCardColorHuman();
+                GameConfiguration.PromptForWildCardColorHuman();
             }
             else
             {
-                Game.PromptForWildCardColorAi();
+                GameConfiguration.PromptForWildCardColorAi();
             }
             
         }

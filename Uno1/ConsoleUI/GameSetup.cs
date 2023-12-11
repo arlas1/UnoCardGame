@@ -13,10 +13,10 @@ public static class GameSetup
         GameState.UnoDeck.Shuffle();
 
         // Ask for Players amount
-        var numPlayers = Game.PromptForNumberOfPlayers();
+        var numPlayers = GameConfiguration.PromptForNumberOfPlayers();
 
         // List with all players as objects
-        Game.CreatePlayers(numPlayers);
+        GameConfiguration.CreatePlayers(numPlayers);
 
         // First stockpile card check
         GameEngine.GameEngine.CheckFirstCardInGame(GameState.UnoDeck, GameState.StockPile);
