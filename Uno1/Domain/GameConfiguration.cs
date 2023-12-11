@@ -56,6 +56,56 @@ public static class GameConfiguration
     }
     
     
+    public static UnoCard.Value PromptForValueToAvoid()
+    {
+        Console.Clear();
+        Console.WriteLine("Choose which card value to avoid:");
+
+        var options = new List<UnoCard.Value> { UnoCard.Value.Reverse, UnoCard.Value.Skip, UnoCard.Value.DrawTwo, UnoCard.Value.WildFour, UnoCard.Value.Wild };
+
+        var selectedIndex = 0;
+
+        ConsoleKeyInfo key;
+
+        do
+        {
+            Console.Clear();
+            Console.WriteLine("Choose which card value to avoid in the deck: ");
+
+            for (var i = 0; i < options.Count; i++)
+            {
+                if (i == selectedIndex)
+                {
+                    Console.BackgroundColor = ConsoleColor.Gray;
+                    Console.ForegroundColor = ConsoleColor.Black;
+                }
+
+                Console.WriteLine($"{i + 1}. {options[i]}");
+
+                Console.ResetColor();
+            }
+
+            key = Console.ReadKey();
+
+            switch (key.Key)
+            {
+                case ConsoleKey.UpArrow:
+                    selectedIndex = (selectedIndex - 1 + options.Count) % options.Count;
+                    break;
+                case ConsoleKey.DownArrow:
+                    selectedIndex = (selectedIndex + 1) % options.Count;
+                    break;
+                case ConsoleKey.Enter:
+                    // "Enter" pressed, return the selected value
+                    Console.Clear();
+                    return options[selectedIndex];
+            }
+        } while (key.Key != ConsoleKey.Enter);
+
+        return default;
+    }
+    
+    
     public static int PromptForNumberOfPlayers()
     {
         return (int)ValidateInput(0, 1, "");
@@ -355,5 +405,6 @@ public static class GameConfiguration
         
         return playerInput;
     }
+    
     
 }
