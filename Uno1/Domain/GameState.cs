@@ -1,4 +1,6 @@
-﻿namespace Domain;
+﻿using System.Text.Json;
+
+namespace Domain;
 
 public static class GameState
 {
@@ -15,6 +17,9 @@ public static class GameState
     public static bool IsColorChosen { get; set; } = false;
     public static int SelectedCardIndex { get; set; } = -1;
     
+    // For the game start only. Property does not go into db.
+    public static int RepositoryChoice { get; set; }
+    
     
     public static GameStateCopy GetGameStateCopy()
     {
@@ -30,19 +35,6 @@ public static class GameState
             SelectedCardIndex = SelectedCardIndex
         };
     }
-    
-    public static void LoadFromJson(string jsonString)
-    {
-        var gameStateData = JsonRepository.LoadFromJson(jsonString);
 
-        GameDirection = gameStateData.GameDirection;
-        CurrentPlayerIndex = gameStateData.CurrentPlayerIndex;
-        UnoDeck = gameStateData.UnoDeck;
-        StockPile = gameStateData.StockPile;
-        PlayersList = gameStateData.PlayersList;
-        CardColorChoice = gameStateData.CardColorChoice;
-        IsColorChosen = gameStateData.IsColorChosen;
-        SelectedCardIndex = gameStateData.SelectedCardIndex;
-    }
     
 }

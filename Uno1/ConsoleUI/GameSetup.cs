@@ -1,10 +1,14 @@
-﻿using Microsoft.EntityFrameworkCore;
-namespace Domain;
+﻿using DAL;
+using Domain;
+using Microsoft.EntityFrameworkCore;
 
-public static class GameSetupLoader
+namespace ConsoleUI;
+
+public static class GameSetup
 {
     public static string? NewGame()
     {
+        // UnoDeck.PromptAvoidValues();
         GameState.UnoDeck.Create();
         GameState.UnoDeck.Shuffle();
 
@@ -15,10 +19,10 @@ public static class GameSetupLoader
         Game.CreatePlayers(numPlayers);
 
         // First stockpile card check
-        Game.CheckFirstCardInGame(GameState.UnoDeck, GameState.StockPile);
+        GameEngine.GameEngine.CheckFirstCardInGame(GameState.UnoDeck, GameState.StockPile);
 
         // Main game loop
-        Game.StartTheGame(numPlayers);
+        GameController.StartTheGame(numPlayers);
 
         return null!;
     }
@@ -77,10 +81,10 @@ public static class GameSetupLoader
         var jsonString = File.ReadAllText(selectedGamePath);
 
         // Update the game state
-        GameState.LoadFromJson(jsonString);
+        JsonRepository.LoadFromJson(jsonString);
 
         // Continue the game from the loaded state
-        Game.StartTheGame(GameState.PlayersList.Count);
+        GameController.StartTheGame(GameState.PlayersList.Count);
 
         return null!;
     }
@@ -139,11 +143,13 @@ public static class GameSetupLoader
         var selectedGameState = savedGames[selectedGameIndex];
 
         // Update the game state from the loaded database state
-        DbRepository.LoadFromDb(selectedGameState.Id);
+        DbRepository.LoadFromDb(selectedGameState.Id, context);
 
         // Continue the game from the loaded state
-        Game.StartTheGame(Domain.GameState.PlayersList.Count);
+        GameController.StartTheGame(Domain.GameState.PlayersList.Count);
 
         return null;
     }
+    
+    
 }

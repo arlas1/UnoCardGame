@@ -41,19 +41,77 @@ namespace Domain
                 AddCardToDeck(new UnoCard(UnoCard.Color.Wild, UnoCard.Value.Wild));
                 AddCardToDeck(new UnoCard(UnoCard.Color.Wild, UnoCard.Value.WildFour));
             }
+
+            var valueToAvoid = PromptAvoidValue();
+        
+            // Remove cards with the specified value
+            Cards.RemoveAll(card => card.CardValue == valueToAvoid);
+
         }
 
+        
+        private static UnoCard.Value PromptAvoidValue()
+        {
+            Console.Clear();
+            Console.WriteLine("Choose which card value to avoid:");
+
+            var options = new List<UnoCard.Value> { UnoCard.Value.Reverse, UnoCard.Value.Skip, UnoCard.Value.DrawTwo, UnoCard.Value.WildFour, UnoCard.Value.Wild };
+
+            var selectedIndex = 0;
+
+            ConsoleKeyInfo key;
+
+            do
+            {
+                Console.Clear();
+                Console.WriteLine("Choose which card value to avoid in the deck: ");
+
+                for (var i = 0; i < options.Count; i++)
+                {
+                    if (i == selectedIndex)
+                    {
+                        Console.BackgroundColor = ConsoleColor.Gray;
+                        Console.ForegroundColor = ConsoleColor.Black;
+                    }
+
+                    Console.WriteLine($"{i + 1}. {options[i]}");
+
+                    Console.ResetColor();
+                }
+
+                key = Console.ReadKey();
+
+                switch (key.Key)
+                {
+                    case ConsoleKey.UpArrow:
+                        selectedIndex = (selectedIndex - 1 + options.Count) % options.Count;
+                        break;
+                    case ConsoleKey.DownArrow:
+                        selectedIndex = (selectedIndex + 1) % options.Count;
+                        break;
+                    case ConsoleKey.Enter:
+                        // "Enter" pressed, return the selected value
+                        return options[selectedIndex];
+                }
+            } while (key.Key != ConsoleKey.Enter);
+
+            return UnoCard.Value.Reverse; // You can return any default value here
+        }
+        
+        
         public void AddCardToDeck(UnoCard card)
         {
-            Deck = Deck.Append(card).ToArray();
+            Deck = Deck!.Append(card).ToArray();
             Cards.Add(card);
         }
 
+        
         public bool IsEmpty()
         {
             return Cards.Count == 0;
         }
 
+        
         public void Shuffle()
         {
             Deck = Cards.ToArray();
@@ -69,6 +127,7 @@ namespace Domain
             Cards = Deck.ToList();
         }
 
+        
         public UnoCard DrawCard()
         {
             if (IsEmpty())
@@ -81,6 +140,7 @@ namespace Domain
             return card;
         }
 
+        
         public void Clear()
         {
             Cards.Clear();

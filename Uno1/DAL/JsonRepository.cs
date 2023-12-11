@@ -1,9 +1,11 @@
 ﻿using System.Text.Json;
+using Domain;
 
-namespace Domain;
+namespace DAL;
 
 public class JsonRepository
 {
+    
     public static void SaveIntoJson()
     {
         var jsonOptions = new JsonSerializerOptions()
@@ -25,10 +27,18 @@ public class JsonRepository
         File.WriteAllText(filePath, jsonString);
     }
     
-    
-    public static GameStateCopy LoadFromJson(string jsonString)
+    public static void LoadFromJson(string jsonString)
     {
-        return JsonSerializer.Deserialize<GameStateCopy>(jsonString)!;
+        var gameStateCopy = JsonSerializer.Deserialize<GameStateCopy>(jsonString)!;
+
+        GameState.GameDirection = gameStateCopy.GameDirection;
+        GameState.CurrentPlayerIndex = gameStateCopy.CurrentPlayerIndex;
+        GameState.UnoDeck = gameStateCopy.UnoDeck!;
+        GameState.StockPile = gameStateCopy.StockPile!;
+        GameState.PlayersList = gameStateCopy.PlayersList!;
+        GameState.CardColorChoice = gameStateCopy.CardColorChoice;
+        GameState.IsColorChosen = gameStateCopy.IsColorChosen;
+        GameState.SelectedCardIndex = gameStateCopy.SelectedCardIndex;
     }
     
 }

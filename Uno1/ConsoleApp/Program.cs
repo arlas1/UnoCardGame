@@ -1,4 +1,5 @@
-﻿using Domain;
+﻿using ConsoleUI;
+using Domain;
 
 namespace ConsoleApp;
 
@@ -6,15 +7,15 @@ public static class Program
 {
     private static void Main()
     {
-        switch (Game.RepositoryChoice())
+        Game.PromptForRepositoryType();
+
+        switch (GameState.RepositoryChoice)
         {
             case 1:
-                //Start the menu with JSON repository
-                Menu.Menu.RunMenu(GameSetupLoader.NewGame, GameSetupLoader.LoadGameJson);
+                Menu.Menu.RunMenu(GameSetup.NewGame, GameSetup.LoadGameJson);
                 break;
             case 2:
-                //Start the menu with SQLite repository
-                Menu.Menu.RunMenu(GameSetupLoader.NewGame, GameSetupLoader.LoadGameDb);
+                Menu.Menu.RunMenu(GameSetup.NewGame, GameSetup.LoadGameDb);
                 break;
         }
     }

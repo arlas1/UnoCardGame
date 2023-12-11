@@ -7,7 +7,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\DAL\DAL.csproj" />
       <ProjectReference Include="..\Menu\Menu.csproj" />
     </ItemGroup>
 
