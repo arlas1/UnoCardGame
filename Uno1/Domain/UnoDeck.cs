@@ -42,7 +42,7 @@ namespace Domain
                 AddCardToDeck(new UnoCard(UnoCard.Color.Wild, UnoCard.Value.WildFour));
             }
 
-            var valueToAvoid = GameConfiguration.PromptForValueToAvoid();
+            var valueToAvoid = GameConfiguration.PromptForCardValueToAvoid();
         
             // Remove cards with the specified value
             Cards.RemoveAll(card => card.CardValue == valueToAvoid);

@@ -56,7 +56,7 @@ public static class GameConfiguration
     }
     
     
-    public static UnoCard.Value PromptForValueToAvoid()
+    public static UnoCard.Value PromptForCardValueToAvoid()
     {
         Console.Clear();
         Console.WriteLine("Choose which card value to avoid:");
