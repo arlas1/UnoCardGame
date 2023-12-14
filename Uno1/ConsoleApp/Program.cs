@@ -1,5 +1,5 @@
 ﻿using ConsoleUI;
-using Domain;
+using UnoGameEngine;
 
 namespace ConsoleApp;
 
@@ -7,15 +7,17 @@ public static class Program
 {
     private static void Main()
     {
-        GameConfiguration.PromptForRepositoryType();
+        var gameEngine = new GameEngine();
 
-        switch (GameState.RepositoryChoice)
+        GameConfiguration.PromptForRepositoryType(gameEngine);
+
+        switch (gameEngine.GameState.RepositoryChoice)
         {
             case 1:
-                Menu.Menu.RunMenu(GameSetup.NewGame, GameSetup.LoadGameJson);
+                Menu.Menu.RunMenu(() => GameSetup.NewGame(gameEngine), () => GameSetup.LoadGameJson(gameEngine));
                 break;
             case 2:
-                Menu.Menu.RunMenu(GameSetup.NewGame, GameSetup.LoadGameDb);
+                Menu.Menu.RunMenu(() => GameSetup.NewGame(gameEngine), () => GameSetup.LoadGameDb(gameEngine));
                 break;
         }
     }

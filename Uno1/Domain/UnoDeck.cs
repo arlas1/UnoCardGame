@@ -41,12 +41,6 @@ namespace Domain
                 AddCardToDeck(new UnoCard(UnoCard.Color.Wild, UnoCard.Value.Wild));
                 AddCardToDeck(new UnoCard(UnoCard.Color.Wild, UnoCard.Value.WildFour));
             }
-
-            var valueToAvoid = GameConfiguration.PromptForCardValueToAvoid();
-        
-            // Remove cards with the specified value
-            Cards.RemoveAll(card => card.CardValue == valueToAvoid);
-
         }
         
         public void AddCardToDeck(UnoCard card)
@@ -55,6 +49,12 @@ namespace Domain
             Cards.Add(card);
         }
 
+        
+        public void RemoveCardsWithValue(UnoCard.Value valueToRemove)
+        {
+            Cards.RemoveAll(card => card.CardValue == valueToRemove);
+            Deck = Cards.ToArray();
+        }
         
         public bool IsEmpty()
         {
@@ -96,5 +96,6 @@ namespace Domain
             Cards.Clear();
             Deck = Cards.ToArray();
         }
+
     }
 }

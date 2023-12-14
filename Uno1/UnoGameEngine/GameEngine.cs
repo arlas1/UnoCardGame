@@ -1,17 +1,29 @@
 ﻿using Domain;
 
-namespace GameEngine;
+namespace UnoGameEngine;
 
-public static class GameEngine
+public class GameEngine
 {
+    public GameState GameState { get; set; } = new();
     
-    public static void CheckFirstCardInGame(UnoDeck unoDeck, List<UnoCard> stockPile)
+    public GameEngine()
+    {
+        GameState.UnoDeck.Create();
+        GameState.UnoDeck.Shuffle();
+    }
+
+    public void DeleteCardWithValueToAvoid(UnoCard.Value valueToAvoid)
+    {
+        GameState.UnoDeck.RemoveCardsWithValue(valueToAvoid);
+    }
+    
+    public void CheckFirstCardInGame()
     {
         var isValid = false;
 
         while (!isValid)
         {
-            var initialCard = unoDeck.DrawCard();
+            var initialCard = GameState.UnoDeck.DrawCard();
 
             // Invalid card types for the start
             if (initialCard.CardValue is
@@ -25,14 +37,14 @@ public static class GameEngine
             }
             else
             {
-                stockPile.Add(initialCard);
+                GameState.StockPile.Add(initialCard);
                 break;
             }
         }
     }
     
     
-    public static bool IsValidCardPlay(UnoCard card)
+    public bool IsValidCardPlay(UnoCard card)
     {
         if (GameState.StockPile.Last().CardColor == UnoCard.Color.Wild &&
             GameState.StockPile.Last().CardValue == UnoCard.Value.Wild)
@@ -47,7 +59,7 @@ public static class GameEngine
     }
     
     
-    public static void GetNextPlayerId(int playerId, int numPlayers)
+    public void GetNextPlayerId(int playerId, int numPlayers)
     {
         if ((GameState.StockPile.Last().CardValue == UnoCard.Value.Skip))
         {
@@ -79,26 +91,11 @@ public static class GameEngine
     }
     
     
-    public static void SubmitPlayerCard(UnoCard card, int playerId, int numPlayers)
+    public void SubmitPlayerCard(UnoCard card, int playerId, int numPlayers)
     {
         if (card.CardValue == UnoCard.Value.Reverse)
         {
             GameState.GameDirection = !GameState.GameDirection;
-        }
-
-        if (card is { CardColor: UnoCard.Color.Wild, CardValue: UnoCard.Value.Wild })
-        {
-            var currentPlayer = GameState.PlayersList[GameState.CurrentPlayerIndex];
-
-            if (currentPlayer.Type == Player.PlayerType.Human)
-            {
-                GameConfiguration.PromptForWildCardColorHuman();
-            }
-            else
-            {
-                GameConfiguration.PromptForWildCardColorAi();
-            }
-            
         }
 
         if (card.CardValue == UnoCard.Value.DrawTwo)
@@ -131,14 +128,14 @@ public static class GameEngine
     }
 
     
-    private static void DrawTwoCards(int playerId)
+    private void DrawTwoCards(int playerId)
     {
         GameState.PlayersList[playerId].Hand.Add(GameState.UnoDeck.DrawCard());
         GameState.PlayersList[playerId].Hand.Add(GameState.UnoDeck.DrawCard());
     }
     
     
-    private static void DrawFourCards(int playerId)
+    private void DrawFourCards(int playerId)
     {
         for (int i = 0; i < 4; i++)
         {
@@ -146,5 +143,18 @@ public static class GameEngine
         }
     }
 
-    
+    public GameStateCopy GetGameStateCopy()
+    {
+        return new GameStateCopy()
+        {
+            GameDirection = GameState.GameDirection,
+            CurrentPlayerIndex = GameState.CurrentPlayerIndex,
+            UnoDeck = GameState.UnoDeck,
+            StockPile = GameState.StockPile,
+            PlayersList = GameState.PlayersList,
+            CardColorChoice = GameState.CardColorChoice,
+            IsColorChosen = GameState.IsColorChosen,
+            SelectedCardIndex = GameState.SelectedCardIndex
+        };
+    }
 }

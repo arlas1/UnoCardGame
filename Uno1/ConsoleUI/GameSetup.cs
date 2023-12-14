@@ -1,34 +1,35 @@
 ﻿using DAL;
-using Domain;
+using UnoGameEngine;
 using Microsoft.EntityFrameworkCore;
 
 namespace ConsoleUI;
 
-public static class GameSetup
+public class GameSetup
 {
-    public static string? NewGame()
+    public static Action NewGame(GameEngine gameEngine)
     {
-        // UnoDeck.PromptAvoidValues();
-        GameState.UnoDeck.Create();
-        GameState.UnoDeck.Shuffle();
-
+        
+        gameEngine.DeleteCardWithValueToAvoid(GameConfiguration.PromptForCardValueToAvoid());
+        
         // Ask for Players amount
         var numPlayers = GameConfiguration.PromptForNumberOfPlayers();
 
         // List with all players as objects
-        GameConfiguration.CreatePlayers(numPlayers);
+        GameConfiguration.CreatePlayers(numPlayers, gameEngine);
 
         // First stockpile card check
-        GameEngine.GameEngine.CheckFirstCardInGame(GameState.UnoDeck, GameState.StockPile);
+        gameEngine.CheckFirstCardInGame();
+        
+        var gameController = new GameController(gameEngine);
 
         // Main game loop
-        GameController.StartTheGame(numPlayers);
+        gameController.Run(numPlayers);
 
         return null!;
     }
 
     
-    public static string? LoadGameJson()
+    public static Action LoadGameJson(GameEngine gameEngine)
     {
         var jsonFolderPath = @"C:\Users\lasim\RiderProjects\icd0008-23f\Uno1\DAL\JsonSaves/";
 
@@ -81,16 +82,18 @@ public static class GameSetup
         var jsonString = File.ReadAllText(selectedGamePath);
 
         // Update the game state
-        JsonRepository.LoadFromJson(jsonString);
+        JsonRepository.LoadFromJson(jsonString, gameEngine);
+        
+        var gameController = new GameController(gameEngine);
 
-        // Continue the game from the loaded state
-        GameController.StartTheGame(GameState.PlayersList.Count);
+        // Main game loop
+        gameController.Run(gameEngine.GameState.PlayersList.Count);
 
         return null!;
     }
     
     
-    public static string? LoadGameDb()
+    public static Action LoadGameDb(GameEngine gameEngine)
     {
         var context = DbRepository.GetContext();
         context.Database.Migrate();
@@ -100,7 +103,7 @@ public static class GameSetup
         if (savedGames.Count == 0)
         {
             Console.WriteLine("No saved games found in the database.");
-            return null;
+            return null!;
         }
 
         int selectedGameIndex = 0; // Default selection to the first game
@@ -143,12 +146,14 @@ public static class GameSetup
         var selectedGameState = savedGames[selectedGameIndex];
 
         // Update the game state from the loaded database state
-        DbRepository.LoadFromDb(selectedGameState.Id, context);
+        DbRepository.LoadFromDb(selectedGameState.Id, context, gameEngine);
+        
+        var gameController = new GameController(gameEngine);
 
         // Continue the game from the loaded state
-        GameController.StartTheGame(Domain.GameState.PlayersList.Count);
+        gameController.Run(gameEngine.GameState.PlayersList.Count);
 
-        return null;
+        return null!;
     }
     
     

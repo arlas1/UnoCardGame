@@ -1,4 +1,6 @@
-﻿namespace Domain;
+﻿using System.Text.Json.Serialization;
+
+namespace Domain;
 
 public class UnoCard
 {

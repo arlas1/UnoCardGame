@@ -1,11 +1,15 @@
 ﻿using System.Text;
+using Domain;
+using UnoGameEngine;
 
-namespace Domain;
+
+namespace ConsoleUI;
 
 public static class GameConfiguration
 {
-    public static void PromptForRepositoryType()
+    public static void PromptForRepositoryType(GameEngine gameEngine)
     {
+        Console.Clear();
         int choice;
         var input = string.Empty;
         
@@ -52,7 +56,56 @@ public static class GameConfiguration
             Console.Clear();
         }
 
-        GameState.RepositoryChoice = choice;
+        gameEngine.GameState.RepositoryChoice = choice;
+    }
+    
+    
+    public static int PromptForNumberOfPlayers()
+    {
+        return (int)ValidateInput(0, 1, "");
+    }
+    
+    
+    public static void CreatePlayers(int numPlayers, GameEngine gameEngine)
+    {
+        var players = new List<Player>();
+        
+        var cardsPerPlayer = PromptForInitialCardsAmountPerPlayer();
+
+        for (var i = 0; i < numPlayers; i++)
+        {
+            var playerName = (string)ValidateInput(i, 2, "");
+            var playerTypeInput = (string)ValidateInput(i, 3, playerName);
+            
+            
+            var playerType = playerTypeInput == "a" ? Player.PlayerType.Ai : Player.PlayerType.Human;
+            var player = new Player(i, playerName, playerType);
+            
+            for (var j = 0; j < cardsPerPlayer; j++)
+            {
+                var drawnCard = gameEngine.GameState.UnoDeck.DrawCard();
+                player.Hand.Add(drawnCard);
+            }
+
+            players.Add(player);
+        }
+
+        gameEngine.GameState.PlayersList = players;
+    }
+    
+    
+    public static void PromptForWildCardColorAi(GameEngine gameEngine)
+    {
+        var currentPlayer = gameEngine.GameState.PlayersList[gameEngine.GameState.CurrentPlayerIndex];
+        
+        if (currentPlayer.Type == Player.PlayerType.Ai)
+        {
+            var randomColor = (UnoCard.Color)new Random().Next(0, 4);
+            Console.WriteLine($"{currentPlayer.Name} placed Wild card. Chose color: {randomColor}");
+            gameEngine.GameState.CardColorChoice = randomColor;
+        }
+        
+        gameEngine.GameState.IsColorChosen = true;
     }
     
     
@@ -104,54 +157,20 @@ public static class GameConfiguration
 
         return default;
     }
-    
-    
-    public static int PromptForNumberOfPlayers()
-    {
-        return (int)ValidateInput(0, 1, "");
-    }
-    
-    
-    public static void CreatePlayers(int numPlayers)
-    {
-        var players = new List<Player>();
-        
-        var cardsPerPlayer = PromptForInitialCardsAmountPerPlayer();
-
-        for (var i = 0; i < numPlayers; i++)
-        {
-            var playerName = (string)ValidateInput(i, 2, "");
-            var playerTypeInput = (string)ValidateInput(i, 3, playerName);
-            
-            
-            var playerType = playerTypeInput == "a" ? Player.PlayerType.Ai : Player.PlayerType.Human;
-            var player = new Player(i, playerName, playerType);
-            
-            for (var j = 0; j < cardsPerPlayer; j++)
-            {
-                var drawnCard = GameState.UnoDeck.DrawCard();
-                player.Hand.Add(drawnCard);
-            }
-
-            players.Add(player);
-        }
-
-        GameState.PlayersList = players;
-    }
 
     
-    public static void PromptForWildCardColorHuman()
+    public static void PromptForWildCardColorHuman(GameEngine gameEngine)
     {
         
         var selectedIndex = 0;
-
+    
         ConsoleKeyInfo key;
-
+    
         do
         {
             Console.Clear();
             Console.WriteLine("Choose the color of the Wild card: ");
-
+    
             for (int i = 0; i < 4; i++)
             {
                 if (i == selectedIndex)
@@ -159,14 +178,14 @@ public static class GameConfiguration
                     Console.BackgroundColor = ConsoleColor.Gray;
                     Console.ForegroundColor = ConsoleColor.Black;
                 }
-
+    
                 Console.WriteLine($"{i + 1}. {((UnoCard.Color)i).ToString()}");
-
+    
                 Console.ResetColor();
             }
-
+    
             key = Console.ReadKey();
-
+    
             switch (key.Key)
             {
                 case ConsoleKey.UpArrow:
@@ -177,28 +196,11 @@ public static class GameConfiguration
                     break;
             }
         } while (key.Key != ConsoleKey.Enter);
-
+    
         Console.Clear();
-
-        GameState.CardColorChoice = (UnoCard.Color)selectedIndex;
-        GameState.IsColorChosen = true;
-    }
     
-    
-    public static void PromptForWildCardColorAi()
-    {
-        var currentPlayer = GameState.PlayersList[GameState.CurrentPlayerIndex];
-        
-        if (currentPlayer.Type == Player.PlayerType.Ai)
-        {
-            var randomColor = (UnoCard.Color)new Random().Next(0, 4);
-            Console.WriteLine($"{currentPlayer.Name} placed Wild card. Chose color: {randomColor}");
-            GameState.CardColorChoice = randomColor;
-        }
-
-        // Console.Clear();
-
-        GameState.IsColorChosen = true;
+        gameEngine.GameState.CardColorChoice = (UnoCard.Color)selectedIndex;
+        gameEngine.GameState.IsColorChosen = true;
     }
 
 

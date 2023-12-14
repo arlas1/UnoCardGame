@@ -1,8 +1,8 @@
 ﻿namespace Menu;
 
-public static class Menu
+public class Menu
 {
-    public static void RunMenu(Func<string?> newGameMethod, Func<string?> loadGameMethod)
+    public static void RunMenu(Action newGameMethod, Action loadGameMethod)
     {
         string[] menuOptions = { "Start a new game", "Load game", "Exit" };
         var selectedIndex = 0;

@@ -1,44 +1,44 @@
 ﻿using Domain;
+using UnoGameEngine;
 
 namespace ConsoleUI;
 
 public static class ConsoleVisualization
 {
-    
-    public static void DisplayGameHeader()
+    public static void DisplayGameHeader(GameEngine gameEngine)
     {
-        if (GameState.UnoDeck.IsEmpty())
+        if (gameEngine.GameState.UnoDeck.IsEmpty())
         {
-            GameState.UnoDeck.Create();
-            GameState.UnoDeck.Shuffle();
+            gameEngine.GameState.UnoDeck.Create();
+            gameEngine.GameState.UnoDeck.Shuffle();
         }
 
         Console.Clear();
         
-        if (GameState.IsColorChosen)
+        if (gameEngine.GameState.IsColorChosen)
         {
             Console.WriteLine("=======================");
-            Console.WriteLine($"Wild card color: {GameState.CardColorChoice}");
+            Console.WriteLine($"Wild card color: {gameEngine.GameState.CardColorChoice}");
         }
 
         Console.WriteLine("=======================");
-        Console.WriteLine("Game direction: " + (GameState.GameDirection ? "Counterclockwise" : "Clockwise"));
+        Console.WriteLine("Game direction: " + (gameEngine.GameState.GameDirection ? "Counterclockwise" : "Clockwise"));
         Console.WriteLine("=======================");
-        Console.WriteLine("Cards in deck left: " + GameState.UnoDeck.Cards.Count);
+        Console.WriteLine("Cards in deck left: " + gameEngine.GameState.UnoDeck.Cards.Count);
         Console.WriteLine("=======================");
-        Console.WriteLine("Top card --> " + GameState.StockPile.Last() + " <--");
+        Console.WriteLine("Top card --> " + gameEngine.GameState.StockPile.Last() + " <--");
         Console.WriteLine("=======================");
 
     }
     
     
-    public static void DisplayPlayerHand(IReadOnlyList<UnoCard> currentPlayerHand)
+    public static void DisplayPlayerHand(IReadOnlyList<UnoCard> currentPlayerHand, GameEngine gameEngine)
     {
-        Console.WriteLine($"{GameState.PlayersList[GameState.CurrentPlayerIndex].Name}'s hand:");
-        GameState.SelectedCardIndex = 0;
+        Console.WriteLine($"{gameEngine.GameState.PlayersList[gameEngine.GameState.CurrentPlayerIndex].Name}'s hand:");
+        gameEngine.GameState.SelectedCardIndex = 0;
         for (var i = 0; i < currentPlayerHand.Count; i++)
         {
-            if (i == GameState.SelectedCardIndex)
+            if (i == gameEngine.GameState.SelectedCardIndex)
             {
                 Console.BackgroundColor = ConsoleColor.Gray;
                 Console.ForegroundColor = ConsoleColor.Black;
@@ -49,7 +49,7 @@ public static class ConsoleVisualization
             Console.ResetColor();
         }
 
-        if (GameState.SelectedCardIndex == currentPlayerHand.Count)
+        if (gameEngine.GameState.SelectedCardIndex == currentPlayerHand.Count)
         {
             Console.BackgroundColor = ConsoleColor.Gray;
             Console.ForegroundColor = ConsoleColor.Black;
