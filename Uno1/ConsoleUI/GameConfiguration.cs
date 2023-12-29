@@ -59,12 +59,10 @@ public static class GameConfiguration
         gameEngine.GameState.RepositoryChoice = choice;
     }
     
-    
     public static int PromptForNumberOfPlayers()
     {
         return (int)ValidateInput(0, 1, "");
     }
-    
     
     public static void CreatePlayers(int numPlayers, GameEngine gameEngine)
     {
@@ -93,7 +91,6 @@ public static class GameConfiguration
         gameEngine.GameState.PlayersList = players;
     }
     
-    
     public static void PromptForWildCardColorAi(GameEngine gameEngine)
     {
         var currentPlayer = gameEngine.GameState.PlayersList[gameEngine.GameState.CurrentPlayerIndex];
@@ -108,6 +105,48 @@ public static class GameConfiguration
         gameEngine.GameState.IsColorChosen = true;
     }
     
+    public static void PromptForWildCardColorHuman(GameEngine gameEngine)
+    {
+        var selectedIndex = 0;
+    
+        ConsoleKeyInfo key;
+    
+        do
+        {
+            Console.Clear();
+            Console.WriteLine("Choose the color of the Wild card: ");
+    
+            for (int i = 0; i < 4; i++)
+            {
+                if (i == selectedIndex)
+                {
+                    Console.BackgroundColor = ConsoleColor.Gray;
+                    Console.ForegroundColor = ConsoleColor.Black;
+                }
+    
+                Console.WriteLine($"{i + 1}. {((UnoCard.Color)i).ToString()}");
+    
+                Console.ResetColor();
+            }
+    
+            key = Console.ReadKey();
+    
+            switch (key.Key)
+            {
+                case ConsoleKey.UpArrow:
+                    selectedIndex = (selectedIndex - 1 + 4) % 4;
+                    break;
+                case ConsoleKey.DownArrow:
+                    selectedIndex = (selectedIndex + 1) % 4;
+                    break;
+            }
+        } while (key.Key != ConsoleKey.Enter);
+    
+        Console.Clear();
+    
+        gameEngine.GameState.CardColorChoice = (UnoCard.Color)selectedIndex;
+        gameEngine.GameState.IsColorChosen = true;
+    }
     
     public static UnoCard.Value PromptForCardValueToAvoid()
     {
@@ -157,53 +196,7 @@ public static class GameConfiguration
 
         return default;
     }
-
     
-    public static void PromptForWildCardColorHuman(GameEngine gameEngine)
-    {
-        
-        var selectedIndex = 0;
-    
-        ConsoleKeyInfo key;
-    
-        do
-        {
-            Console.Clear();
-            Console.WriteLine("Choose the color of the Wild card: ");
-    
-            for (int i = 0; i < 4; i++)
-            {
-                if (i == selectedIndex)
-                {
-                    Console.BackgroundColor = ConsoleColor.Gray;
-                    Console.ForegroundColor = ConsoleColor.Black;
-                }
-    
-                Console.WriteLine($"{i + 1}. {((UnoCard.Color)i).ToString()}");
-    
-                Console.ResetColor();
-            }
-    
-            key = Console.ReadKey();
-    
-            switch (key.Key)
-            {
-                case ConsoleKey.UpArrow:
-                    selectedIndex = (selectedIndex - 1 + 4) % 4;
-                    break;
-                case ConsoleKey.DownArrow:
-                    selectedIndex = (selectedIndex + 1) % 4;
-                    break;
-            }
-        } while (key.Key != ConsoleKey.Enter);
-    
-        Console.Clear();
-    
-        gameEngine.GameState.CardColorChoice = (UnoCard.Color)selectedIndex;
-        gameEngine.GameState.IsColorChosen = true;
-    }
-
-
     private static int PromptForInitialCardsAmountPerPlayer()
     {
         int choice;
@@ -254,7 +247,6 @@ public static class GameConfiguration
 
         return choice;
     }
-    
     
     private static object ValidateInput(int playerIndex, int caseOfUsage, string playerNameInput)
     {
@@ -407,6 +399,5 @@ public static class GameConfiguration
         
         return playerInput;
     }
-    
     
 }

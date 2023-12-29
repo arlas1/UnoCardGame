@@ -8,6 +8,9 @@ public class AppDbContext : DbContext
 {
     public DbSet<GameState> GameStates { get; set; } = default!;
     public DbSet<Player> Players { get; set; } = default!;
+    
+    public DbSet<ConnectedClient> ConnectedClients { get; set; } = default!;
+    
     public DbSet<Hand> Hands { get; set; } = default!;
     public DbSet<StockPile> StockPiles { get; set; } = default!;
     public DbSet<UnoDeck> UnoDecks { get; set; } = default!;
@@ -22,12 +25,7 @@ public class AppDbContext : DbContext
     
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        
-        const string dbFilePath = @"C:\Users\lasim\RiderProjects\icd0008-23f\Uno1\DAL\UnoDb.db";
-        const string connectionString = $"Data Source={dbFilePath};";
         base.OnConfiguring(optionsBuilder);
-            
-        // Configure SQLite
-        optionsBuilder.UseSqlite(connectionString);
+        optionsBuilder.UseSqlServer("Server=DESKTOP-FEPAJ2M\\MSSQLSERVER01;Database=Uno;Trusted_Connection=True;TrustServerCertificate=True;");
     }
 }

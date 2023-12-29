@@ -18,12 +18,12 @@ public class GameSetup
         GameConfiguration.CreatePlayers(numPlayers, gameEngine);
 
         // First stockpile card check
-        gameEngine.CheckFirstCardInGame();
+        var asd = gameEngine.CheckFirstCardInGame();
         
         var gameController = new GameController(gameEngine);
 
         // Main game loop
-        gameController.Run(numPlayers);
+        gameController.Run();
 
         return null!;
     }
@@ -87,7 +87,7 @@ public class GameSetup
         var gameController = new GameController(gameEngine);
 
         // Main game loop
-        gameController.Run(gameEngine.GameState.PlayersList.Count);
+        gameController.Run();
 
         return null!;
     }
@@ -151,7 +151,7 @@ public class GameSetup
         var gameController = new GameController(gameEngine);
 
         // Continue the game from the loaded state
-        gameController.Run(gameEngine.GameState.PlayersList.Count);
+        gameController.Run();
 
         return null!;
     }

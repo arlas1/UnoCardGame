@@ -1,0 +1,115 @@
+@page
+@model IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Games</h1>
+@if (Model.WinnerMessage != default)
+{
+    <h3 class="text-center">@Model.WinnerMessage</h3>
+
+}
+
+<table id="gamesTable" class="table">
+    <thead>
+        <tr>
+            <th>
+                Game Id
+            </th>
+            <th>
+                Game Boss
+            </th>
+            <th>
+                Max Players Amount
+            </th>
+            <th>
+                Current players info
+            </th>
+            <th>
+                Does Game started ?
+            </th>
+            <th>
+                Does Game ended ?
+            </th>
+            <th>
+                Places in the Game Left
+            </th>
+        </tr>
+    </thead>
+
+    <tbody>
+
+    @foreach (var (gameId ,gameState) in Model.Games)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => gameId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => gameState.PlayersList[0].Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => gameState.PlayersMaxAmount)
+                </td>
+                <td>
+                    @foreach (var player in gameState.PlayersList)
+                    {
+                        <p>@($"{player.Name}, {player.Type}")</p>
+                    }
+                </td>
+                <td>
+                    @(gameState.IsGameStarted == 0 ? "No" : "Yes")
+                </td>
+                <td>
+                    @foreach (var state in @Model.GameStates)
+                    {
+                        if (gameId == state.Id)
+                        {
+                            @(state.IsGameEnded == 1 ? "Yes" : "No")
+                        }
+                    }
+                </td>
+                <td id="@($"placesLeft_{gameId}")">
+                    <script>
+                        var placesLeft = parseInt("@gameState.PlayersMaxAmount") - @gameState.PlayersList.Count;
+                        document.getElementById("@($"placesLeft_{gameId}")").innerText = placesLeft;
+                    </script>
+                </td>
+                @if (gameState.PlayersMaxAmount - gameState.PlayersList.Count != 0 && gameState.IsGameStarted == 0)
+                {
+                    <td>
+                        <form method="post" asp-page="/GameWait/Index">
+                            <input type="hidden" name="GameId" value="@gameId" />
+                            <div class="form-group">
+                                <label asp-for="Nickname" class="control-label">Enter your Nickname (1 - 20 characters)</label>
+                                <input asp-for="Nickname" class="form-control" />
+                                <span asp-validation-for="Nickname" class="text-danger"></span>
+                            </div>
+                            <input type="submit" value="Join" class="btn btn-primary" />
+                        </form>
+                    </td>
+                }
+            </tr>
+        }
+    </tbody>
+</table>
+
+<script>
+    function updateTable() {
+        $.ajax({
+            type: "GET",
+            url: "/Dashboard/Index",
+            success: function (data) {
+                var updatedBody = $(data).find('#gamesTable tbody');
+
+                $('#gamesTable tbody').html(updatedBody.html());
+            }
+        });
+    }
+
+    setInterval(updateTable, 3000);
+
+</script>
+

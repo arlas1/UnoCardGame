@@ -50,7 +50,7 @@ namespace Domain
         }
 
         
-        public void RemoveCardsWithValue(UnoCard.Value valueToRemove)
+        public void RemoveCardsWithValue(UnoCard.Value? valueToRemove)
         {
             Cards.RemoveAll(card => card.CardValue == valueToRemove);
             Deck = Cards.ToArray();

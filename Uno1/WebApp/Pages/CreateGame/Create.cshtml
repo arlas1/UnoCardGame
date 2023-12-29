@@ -1,0 +1,65 @@
+@page
+@using Domain
+@model CreateModel
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<br>
+<br>
+<br>
+<br>
+<br>
+
+<p id="isConnected"></p>
+
+<div class="row justify-content-center">
+    <div class="col-md-4"> <!-- Adjust the column width as needed -->
+        <section>
+            <form method="post">
+                <h1 class="text-center">Create a New game</h1>
+                <hr />
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                
+                <div class="form-group">
+                    <label asp-for="@Model.Nickname" class="control-label">Enter your Nickname. (1 - 20 characters)</label>
+                    <input asp-for="@Model.Nickname" class="form-control"/>
+                    <span asp-validation-for="@Model.Nickname" class="text-danger"></span>
+                </div>
+                <br>
+                <div class="form-group">
+                    <label asp-for="@Model.PlayersMaxAmount" class="control-label">Enter max players amount. (2 - 7)</label>
+                    <input asp-for="@Model.PlayersMaxAmount" class="form-control"/>
+                    <span asp-validation-for="@Model.PlayersMaxAmount" class="text-danger"></span>
+                </div>
+                <br>
+                <div class="form-group">
+                    <label asp-for="@Model.CardsMaxInHand" class="control-label">Enter starting cards amount. (2 - 7)</label>
+                    <input asp-for="@Model.CardsMaxInHand" class="form-control"/>
+                    <span asp-validation-for="@Model.CardsMaxInHand" class="text-danger"></span>
+                </div>
+                <br>
+                <div class="form-group">
+                    <label asp-for="@Model.CardValueToAvoid" class="control-label">Card value to avoid during the game.</label>
+                    <select asp-for="@Model.CardValueToAvoid" class="form-control">
+                        <option value="">None</option>
+                        <option value="@UnoCard.Value.Reverse">Reverse</option>
+                        <option value="@UnoCard.Value.Skip">Skip</option>
+                        <option value="@UnoCard.Value.DrawTwo">+2</option>
+                        <option value="@UnoCard.Value.WildFour">+4</option>
+                        <option value="@UnoCard.Value.Wild">Wild</option>
+                    </select>
+                    <span asp-validation-for="@Model.CardValueToAvoid" class="text-danger"></span>
+                </div>
+
+                <br>
+                
+                <div class="form-group text-center" >
+                    <input type="submit" value="Create" class="btn btn-primary" />
+                </div>
+            </form>
+        </section>
+    </div>
+</div>
+

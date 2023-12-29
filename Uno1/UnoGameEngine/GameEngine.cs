@@ -12,19 +12,32 @@ public class GameEngine
         GameState.UnoDeck.Shuffle();
     }
 
-    public void DeleteCardWithValueToAvoid(UnoCard.Value valueToAvoid)
+    public void DeleteCardWithValueToAvoid(UnoCard.Value? valueToAvoid)
     {
         GameState.UnoDeck.RemoveCardsWithValue(valueToAvoid);
     }
     
-    public void CheckFirstCardInGame()
+    public List<UnoCard> GetOneHand()
+    {
+        List<UnoCard> listOfCards = new();
+        for (var j = 0; j < GameState.CardsMaxAmount; j++)
+        {
+            var drawnCard = GameState.UnoDeck.DrawCard();
+            listOfCards.Add(drawnCard);
+        }
+
+        return listOfCards;
+    }
+    
+    public UnoCard CheckFirstCardInGame()
     {
         var isValid = false;
+        UnoCard initialTakenCard = null!;
 
         while (!isValid)
         {
             var initialCard = GameState.UnoDeck.DrawCard();
-
+            initialTakenCard = initialCard;
             // Invalid card types for the start
             if (initialCard.CardValue is
                 UnoCard.Value.Wild or
@@ -41,8 +54,9 @@ public class GameEngine
                 break;
             }
         }
+
+        return initialTakenCard;
     }
-    
     
     public bool IsValidCardPlay(UnoCard card)
     {
@@ -59,20 +73,20 @@ public class GameEngine
     }
     
     
-    public void GetNextPlayerId(int playerId, int numPlayers)
+    public void GetNextPlayerId(int playerId)
     {
-        if ((GameState.StockPile.Last().CardValue == UnoCard.Value.Skip))
+        if (GameState.StockPile.Last().CardValue == UnoCard.Value.Skip)
         {
             if (!GameState.GameDirection)
             {
                 // Move forward if skip
-                GameState.CurrentPlayerIndex = (playerId + 2) % numPlayers;
+                GameState.CurrentPlayerIndex = (playerId + 2) % GameState.PlayersList.Count;
 
             }
             else
             {
                 // Move backward if skip
-                GameState.CurrentPlayerIndex = (playerId - 2 + numPlayers) % numPlayers;
+                GameState.CurrentPlayerIndex = (playerId - 2 + GameState.PlayersList.Count) % GameState.PlayersList.Count;
             }
         }
         else
@@ -80,27 +94,28 @@ public class GameEngine
             if (!GameState.GameDirection)
             {
                 // Move forward
-                GameState.CurrentPlayerIndex = (playerId + 1) % numPlayers;
+                GameState.CurrentPlayerIndex = (playerId + 1) % GameState.PlayersList.Count;
             }
             else
             {
                 // Move backward
-                GameState.CurrentPlayerIndex = (playerId - 1 + numPlayers) % numPlayers;
+                GameState.CurrentPlayerIndex = (playerId - 1 + GameState.PlayersList.Count) % GameState.PlayersList.Count;
             }
         }
     }
     
     
-    public void SubmitPlayerCard(UnoCard card, int playerId, int numPlayers)
+    public void SubmitPlayerCard(UnoCard card, int playerId)
     {
         if (card.CardValue == UnoCard.Value.Reverse)
         {
+            
             GameState.GameDirection = !GameState.GameDirection;
         }
 
         if (card.CardValue == UnoCard.Value.DrawTwo)
         {
-            var nextPlayerId = (playerId + 1) % numPlayers;
+            var nextPlayerId = (playerId + 1) % GameState.PlayersList.Count;
 
             if (!GameState.GameDirection)
             {
@@ -108,13 +123,13 @@ public class GameEngine
             }
             else
             {
-                DrawTwoCards((playerId - 1 + numPlayers) % numPlayers);
+                DrawTwoCards((playerId - 1 + GameState.PlayersList.Count) % GameState.PlayersList.Count);
             }
         }
 
         if (card is { CardColor: UnoCard.Color.Wild, CardValue: UnoCard.Value.WildFour })
         {
-            var nextPlayerId = (playerId + 1) % numPlayers;
+            var nextPlayerId = (playerId + 1) % GameState.PlayersList.Count;
 
             if (!GameState.GameDirection)
             {
@@ -122,7 +137,7 @@ public class GameEngine
             }
             else
             {
-                DrawFourCards((playerId - 1 + numPlayers) % numPlayers);
+                DrawFourCards((playerId - 1 + GameState.PlayersList.Count) % GameState.PlayersList.Count);
             }
         }
     }

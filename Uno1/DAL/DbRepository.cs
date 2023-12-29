@@ -12,11 +12,8 @@ public static class DbRepository
     // Get context from the db
     public static AppDbContext GetContext()
     {
-        var dbFilePath = @"C:\Users\lasim\RiderProjects\icd0008-23f\Uno1\DAL\UnoDb.db";
-        var connectionString = $"Data Source={dbFilePath};";
-
         var contextOptions = new DbContextOptionsBuilder<AppDbContext>()
-            .UseSqlite(connectionString)
+            .UseSqlite("Server=DESKTOP-FEPAJ2M\\MSSQLSERVER01;Database=Uno;Trusted_Connection=True;TrustServerCertificate=True;")
             .EnableDetailedErrors()
             .EnableSensitiveDataLogging()
             .Options;

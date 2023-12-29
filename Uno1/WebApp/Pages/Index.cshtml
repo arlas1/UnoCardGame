@@ -1,0 +1,46 @@
+@page
+@model IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<style>
+    .btn-lg-custom {
+        padding: 15px 20px; /* Adjust the padding as needed */
+        font-size: 1.5em; /* Adjust the font size as needed */
+    }
+    
+</style>
+
+
+<div class="text-center">
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    
+    @if (@Model.GameStates.Any())
+    {
+        <div class="text-center">
+            <a asp-page="/CreateGame/Create" class="btn btn-primary btn-lg btn-block btn-lg-custom">Create a New Game</a>
+        </div>
+        <br>
+        <p class="h4">OR</p>
+        <br>
+        <div>
+            <a asp-page="/Dashboard/Index" class="btn btn-secondary btn-lg btn-block btn-lg-custom">Join an Existing Game</a>
+        </div>
+        
+    }
+    else
+    {
+        <p class="h4">No games were created yet.</p>
+        <br>
+        <br>
+        <div>
+            <a asp-page="./CreateGame/Create" class="btn btn-primary btn-lg btn-block btn-lg-custom">Create a New Game</a>
+        </div>
+    }
+</div>

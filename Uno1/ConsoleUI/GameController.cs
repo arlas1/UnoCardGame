@@ -13,7 +13,7 @@ public class GameController
     {
         _gameEngine = gameEngine;
     }
-    public void Run(int numPlayers)
+    public void Run()
     {
         var exitGame = false;
         
@@ -54,27 +54,12 @@ public class GameController
                     _gameEngine.GameState.IsColorChosen = false;
                     break;
                 }
-                // var allPlayersAi = GameState.PlayersList.All(player => player.Type == Player.PlayerType.Ai);
 
-                // if (currentPlayer.Type == Player.PlayerType.Ai)
-                // {
-                //     if (selectedCard is { CardColor: UnoCard.Color.Wild, CardValue: UnoCard.Value.Wild })
-                //     {
-                //         // Task 2: Randomly pick one of 4 colors for Wild card
-                //         var randomColor = (UnoCard.Color)new Random().Next(0, 4);
-                //         Console.WriteLine($"{currentPlayer.Name} placed Wild card. Chose color: {randomColor}");
-                //         GameState.CardColorChoice = randomColor;
-                //     }
-                //     else
-                //     {
-                //         Console.WriteLine($"{currentPlayer.Name} placed {selectedCard}");
-                //     }
-                // }
                 Console.WriteLine($"{currentPlayer.Name} placed {selectedCard}");
 
                 if (selectedCard.CardValue != UnoCard.Value.Wild)
                 {
-                    _gameEngine.SubmitPlayerCard(selectedCard, playerId, numPlayers);
+                    _gameEngine.SubmitPlayerCard(selectedCard, playerId);
                 }
                 else
                 {
@@ -88,7 +73,7 @@ public class GameController
                 }
                 
                 // Player switch + exclusive control for skip card
-                _gameEngine.GetNextPlayerId(playerId, numPlayers);
+                _gameEngine.GetNextPlayerId(playerId);
                 
             }
             else
@@ -227,14 +212,14 @@ public class GameController
                             if (_gameEngine.GameState.PlayersList[playerId].Hand.Count == 0)
                             {
                                 Console.WriteLine(
-                                    $"{_gameEngine.GameState.PlayersList[_gameEngine.GameState.CurrentPlayerIndex + 1].Name} wins! Congratulations!");
+                                    $"{_gameEngine.GameState.PlayersList[_gameEngine.GameState.CurrentPlayerIndex].Name} wins! Congratulations!");
                                 _gameEngine.GameState.IsColorChosen = false;
                                 break;
                             }
 
                             if (selectedCard.CardValue != UnoCard.Value.Wild)
                             {
-                                _gameEngine.SubmitPlayerCard(selectedCard, playerId, numPlayers);
+                                _gameEngine.SubmitPlayerCard(selectedCard, playerId);
                             }
                             else
                             {
@@ -257,7 +242,7 @@ public class GameController
                     }
 
                     // Player switch + exclusive control for skip card
-                    _gameEngine.GetNextPlayerId(playerId, numPlayers);
+                    _gameEngine.GetNextPlayerId(playerId);
                 }
             }
         }

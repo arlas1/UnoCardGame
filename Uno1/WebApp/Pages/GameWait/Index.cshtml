@@ -1,0 +1,99 @@
+@page
+@model IndexModel
+
+@{
+    ViewData["Title"] = "Game Wait";
+}
+
+<h1>Game nr.@Model.GameId. Waiting room.</h1>
+<p type="hidden" value="@Model.PlayerId"></p>
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>
+            Player Nickname
+        </th>
+        <th>
+            Player role
+        </th>
+        <th>
+            Player type
+        </th>
+        <th>
+            Places in the Game Left
+        </th>
+    </tr>
+    </thead>
+
+    <tbody id="playerList">
+    @foreach (var player in Model.Players)
+    {
+        <tr>
+            <td>@player.Name</td>
+            <td>@(player.Role == 1 ? "Boss" : "Regular")</td>
+            <td>@(player.Type == 0 ? "Human" : "Ai")</td>
+            <td>@Model.PlayersToStart</td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+
+@if (Model.IsBoss == 1)
+{
+    <form method="post" asp-page="/GamePlay/Index">
+        <input type="hidden" name="GameId" value="@Model.GameId" />
+        <input type="hidden" name="PlayerId" value="@Model.PlayerId"/>
+        <input type="hidden" name="IsBoss" value="@Model.IsBoss" />
+        <input type="hidden" name="Command" value="start"/>
+        <input type="submit" value="Start Game" class="btn btn-success"/>
+    </form>
+        
+    <br/>
+    <form method="post" asp-page="/Dashboard/Index">
+        <input type="hidden" name="GameId" value="@Model.GameId"/>
+        <input type="hidden" name="Command" value="delete"/>
+        <input type="submit" value="Delete Game" class="btn btn-danger"/>
+    </form>
+}
+else
+{
+    <form method="get" asp-page="/GameWait/Index">
+        <input type="hidden" name="GameId" value="@Model.GameId"/>
+        <input type="hidden" name="PlayerId" value="@Model.PlayerId"/>
+        <input type="hidden" name="Nickname" value="@Model.Nickname"/>
+        <input type="hidden" name="MaxAmount" value="@Model.MaxAmount"/>
+        <input type="hidden" name="Command" value="checkGameStart" class="btn btn-danger" />
+        <input type="submit" value="Check game start" class="btn btn-success"/>
+    </form>
+    <br/>
+    <form method="post" asp-page="/Dashboard/Index">
+        <input type="hidden" name="GameId" value="@Model.GameId"/>
+        <input type="hidden" name="PlayerId" value="@Model.PlayerId"/>
+        <input type="hidden" name="Command" value="leave" class="btn btn-danger" />
+        <input type="submit" value="Leave Game" class="btn btn-danger"/>
+    </form>
+}
+
+<script>
+    function updatePlayerTable() {
+        $.ajax({
+            type: "GET",
+            url: "/GameWait/Index",
+            data: {
+                gameId: "@Model.GameId",
+                isBoss: "@Model.IsBoss",
+                maxAmount: "@Model.MaxAmount",
+                playerId: "@Model.PlayerId",
+            },
+            success: function (data) {
+                // Parse the received data as HTML and find the tbody
+                var updatedBody = $(data).find('#playerList');
+                // Replace the content of the existing tbody with the updated data
+                $('#playerList').html(updatedBody.html());   
+            }
+        });
+    }
+    setInterval(updatePlayerTable, 3000);
+</script>
