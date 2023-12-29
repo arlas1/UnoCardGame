@@ -36,41 +36,43 @@ public class GameController
                     // Choose a random valid card
                     var randomIndex = new Random().Next(0, validCards.Count);
                     selectedCard = validCards[randomIndex];
+                    
+                    currentPlayer.Hand.Remove(selectedCard);
+                    _gameEngine.GameState.StockPile.Add(selectedCard);
+                    
+                    if (_gameEngine.GameState.PlayersList[playerId].Hand.Count == 0)
+                    {
+                        Console.WriteLine(
+                            $"{_gameEngine.GameState.PlayersList[_gameEngine.GameState.CurrentPlayerIndex + 1].Name} wins! Congratulations!");
+                        _gameEngine.GameState.IsColorChosen = false;
+                        break;
+                    }
+
+                    Console.WriteLine($"{currentPlayer.Name} placed {selectedCard}");
+
+                    if (selectedCard.CardValue != UnoCard.Value.Wild)
+                    {
+                        _gameEngine.SubmitPlayerCard(selectedCard, playerId);
+                    }
+                    else
+                    {
+                        GameConfiguration.PromptForWildCardColorAi(_gameEngine);
+                    }
+                
+
+                    if (selectedCard.CardColor == _gameEngine.GameState.CardColorChoice)
+                    {
+                        _gameEngine.GameState.IsColorChosen = false;
+                    }
                 }
                 else
                 {
                     // If no valid cards, draw a card
                     selectedCard = _gameEngine.GameState.UnoDeck.DrawCard();
                     currentPlayer.Hand.Add(selectedCard);
+                    // Console.WriteLine($"{currentPlayer.Name} took {selectedCard}");
                 }
 
-                currentPlayer.Hand.Remove(selectedCard);
-                _gameEngine.GameState.StockPile.Add(selectedCard);
-                
-                if (_gameEngine.GameState.PlayersList[playerId].Hand.Count == 0)
-                {
-                    Console.WriteLine(
-                        $"{_gameEngine.GameState.PlayersList[_gameEngine.GameState.CurrentPlayerIndex + 1].Name} wins! Congratulations!");
-                    _gameEngine.GameState.IsColorChosen = false;
-                    break;
-                }
-
-                Console.WriteLine($"{currentPlayer.Name} placed {selectedCard}");
-
-                if (selectedCard.CardValue != UnoCard.Value.Wild)
-                {
-                    _gameEngine.SubmitPlayerCard(selectedCard, playerId);
-                }
-                else
-                {
-                    GameConfiguration.PromptForWildCardColorAi(_gameEngine);
-                }
-                
-
-                if (selectedCard.CardColor == _gameEngine.GameState.CardColorChoice)
-                {
-                    _gameEngine.GameState.IsColorChosen = false;
-                }
                 
                 // Player switch + exclusive control for skip card
                 _gameEngine.GetNextPlayerId(playerId);
@@ -247,5 +249,7 @@ public class GameController
             }
         }
     }
+
+
     
 }

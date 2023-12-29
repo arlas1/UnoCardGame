@@ -119,7 +119,7 @@ public class GameManager(AppDbContext context)
 
     }
     
-    public (int playerId, int maxAmount) JoinTheGame(int gameId, string nickname)
+    public (int playerId, int maxAmount) JoinTheGame(int gameId, string nickname, Player.PlayerType playerType )
     {
         var gameState = context.GameStates.SingleOrDefault(gs => gs.Id == gameId);
         
@@ -129,7 +129,7 @@ public class GameManager(AppDbContext context)
         var player = new DAL.DbEntities.Player()
         {
             Name = nickname,
-            Type = (int) Player.PlayerType.Human,
+            Type = (int) playerType,
             Role = 0,
             GameStateId = gameState.Id
         };
@@ -241,6 +241,7 @@ public class GameManager(AppDbContext context)
         {
             GameState =
             {
+                // ReSharper disable once SimplifyConditionalTernaryExpression
                 GameDirection = gameState!.GameDirection == 0 ? false : true,
                 CurrentPlayerIndex = gameState.CurrentPlayerIndex,
                 PlayersList = [],
@@ -298,6 +299,13 @@ public class GameManager(AppDbContext context)
         gameState.CurrentPlayerIndex = gameEngine.GameState.CurrentPlayerIndex;
         context.UnoDecks.RemoveRange(context.UnoDecks.Where(card => card.Id == lastDeckCard.Id));
         await context.SaveChangesAsync();
+        
+        var currentPlayer = players[gameState.CurrentPlayerIndex];
+        if (currentPlayer.Type == (int)Player.PlayerType.Ai)
+        {
+            await PlayCardAi(gameId, currentPlayer.Id);
+        }
+
     }
     
     public async Task<bool> ValidateCard(int gameId, UnoCard card, UnoCard.Color? cardColor)
@@ -352,7 +360,7 @@ public class GameManager(AppDbContext context)
         return result;
     }
     
-    public async Task PlayCard(int gameId, int playerId, UnoCard card)
+    public async Task PlayCardHuman(int gameId, int playerId, UnoCard card)
     {
         // Retrieve the current game state
         var gameState = context.GameStates.SingleOrDefault(gs => gs.Id == gameId);
@@ -464,8 +472,13 @@ public class GameManager(AppDbContext context)
             context.UnoDecks.Remove(unoDeckCardToRemove!);
         }
         
-
         await context.SaveChangesAsync();
+        
+        if (currentPlayer.Type == (int)Player.PlayerType.Ai)
+        {
+            await PlayCardAi(gameId, currentPlayer.Id);
+        }
+        
     }
     
     public async Task<(bool hasWinner, int playerId)> CheckForWinner(int gameId, int playerId)
@@ -484,12 +497,199 @@ public class GameManager(AppDbContext context)
         if (playerHandCount == 0)
         {
             gameState.IsGameEnded = 1;
-            gameState!.WinnerId = playerId;
+            gameState.WinnerId = playerId;
             await context.SaveChangesAsync();
             return (true, playerId);
         }
 
         return (false, playerId);
     }
-    
+
+    private async Task PlayCardAi(int gameId, int playerId)
+    {
+        var gameState = context.GameStates.SingleOrDefault(gs => gs.Id == gameId);
+
+        if (gameState!.IsGameEnded == 1)
+        {
+            return;
+        }
+
+        var players = await context.Players
+            .Where(player => player.GameStateId == gameId)
+            .ToListAsync();
+
+
+        var gameEngine = new GameEngine()
+        {
+            GameState =
+            {
+                // ReSharper disable once SimplifyConditionalTernaryExpression
+                GameDirection = gameState.GameDirection == 0 ? false : true,
+                CurrentPlayerIndex = gameState.CurrentPlayerIndex,
+                PlayersList = [],
+                StockPile = [],
+                CardColorChoice = gameState.CardColorChoice == 4 ? default : (UnoCard.Color)gameState.CardColorChoice
+            }
+        };
+        var lastStockPileCard = context.StockPiles
+            .Where(stockPile => stockPile.GameStateId == gameId)
+            .OrderBy(stockPile => stockPile.Id)
+            .Last();
+        var color = (UnoCard.Color)lastStockPileCard.CardColor;
+        var value = (UnoCard.Value)lastStockPileCard.CardValue;
+
+        gameEngine.GameState.StockPile.Add(new UnoCard(color, value));
+
+        // Retrieve necessary data from the database
+        var unoDeck = await context.UnoDecks
+            .Where(unoCard => unoCard.GameStateId == gameId)
+            .ToListAsync();
+
+        // Update the game engine with the retrieved data
+        gameEngine.GameState.UnoDeck.Clear();
+        foreach (var unoCardEntity in unoDeck)
+        {
+            gameEngine.GameState.UnoDeck.AddCardToDeck(new UnoCard(
+                (UnoCard.Color)unoCardEntity.CardColor,
+                (UnoCard.Value)unoCardEntity.CardValue
+            ));
+        }
+
+        Player currentPlayer = new Player(1,"a", Player.PlayerType.Human);
+        var plId = 0;
+        foreach (var playerEntity in players)
+        {
+            gameEngine.GameState.PlayersList.Add(new Player(plId, playerEntity.Name,
+                (Player.PlayerType)playerEntity.Type));
+            plId++;
+            if (playerEntity.Id == playerId)
+            {
+                currentPlayer.Id = playerEntity.Id;
+                currentPlayer.Name = playerEntity.Name;
+                currentPlayer.Type = (Player.PlayerType)playerEntity.Type;
+            }
+        }
+// change
+        foreach (var card in await context.Hands.Where(card => card.PlayerId == playerId).ToListAsync())
+        {
+            var cardToAdd = new UnoCard((UnoCard.Color)card.CardColor, (UnoCard.Value)card.CardValue);
+            currentPlayer.Hand.Add(cardToAdd);
+        }
+
+        var validCards = currentPlayer.Hand
+            .Where(card => gameEngine.IsValidCardPlay(card))
+            .ToList();
+
+        UnoCard selectedCard;
+//------------------------------------------------------------------------------------------------------------------//
+        if (validCards.Count > 0)
+        {
+            // Choose a random valid card
+            var randomIndex = new Random().Next(0, validCards.Count);
+            selectedCard = validCards[randomIndex];
+
+            // Update database with AI move
+            context.StockPiles.Add(new StockPile
+            {
+                CardColor = (int)selectedCard.CardColor,
+                CardValue = (int)selectedCard.CardValue,
+                GameStateId = gameId
+            });
+
+            var cardToRemove = context.Hands.FirstOrDefault(hand =>
+                hand.GameStateId == gameId &&
+                hand.PlayerId == playerId &&
+                hand.CardColor == (int)selectedCard.CardColor &&
+                hand.CardValue == (int)selectedCard.CardValue);
+
+            context.Hands.Remove(cardToRemove!);
+            await context.SaveChangesAsync();
+
+            gameEngine.SubmitPlayerCard(selectedCard, gameState.CurrentPlayerIndex);
+            gameEngine.GameState.StockPile.Add(selectedCard);
+            if (gameState.IsColorChosen == 1 && selectedCard.CardValue != UnoCard.Value.Wild)
+            {
+                gameState.IsColorChosen = 0;
+                gameEngine.GameState.IsColorChosen = false;
+            } 
+            else if (gameState.IsColorChosen == 0 && selectedCard.CardValue == UnoCard.Value.Wild)
+            {
+                gameState.CardColorChoice = new Random().Next(0, 4);
+                gameEngine.GameState.IsColorChosen = true;
+            }
+            await context.SaveChangesAsync();
+
+            gameEngine.GetNextPlayerId(gameState.CurrentPlayerIndex);
+
+            gameState.CurrentPlayerIndex = gameEngine.GameState.CurrentPlayerIndex;
+            gameState.GameDirection = gameEngine.GameState.GameDirection ? 1 : 0;
+
+            var nextPlayer = players[gameState.CurrentPlayerIndex];
+            foreach (var handCard in gameEngine.GameState.PlayersList[gameState.CurrentPlayerIndex].Hand)
+            {
+                context.Hands.Add(new Hand
+                {
+                    CardColor = (int)handCard.CardColor,
+                    CardValue = (int)handCard.CardValue,
+                    PlayerId = nextPlayer.Id,
+                    GameStateId = gameId
+                });
+                var unoDeckCardToRemove = context.UnoDecks
+                    .Where(deckCard =>
+                        deckCard.GameStateId == gameId &&
+                        deckCard.CardColor == (int)handCard.CardColor &&
+                        deckCard.CardValue == (int)handCard.CardValue)
+                    .OrderByDescending(deckCard => deckCard.Id) // Order by Id in descending order
+                    .FirstOrDefault();
+                context.UnoDecks.Remove(unoDeckCardToRemove!);
+            }
+            await CheckForWinner(gameId, playerId);
+
+            await context.SaveChangesAsync();
+
+            // Continue with the next AI player if applicable
+            if (nextPlayer.Type == (int)Player.PlayerType.Ai)
+            {
+                await PlayCardAi(gameId, nextPlayer.Id);
+            }
+        }
+        else
+        {
+            // If no valid cards, draw a card
+            selectedCard = gameEngine.GameState.UnoDeck.DrawCard();
+            context.Hands.Add(new Hand
+            {
+                CardColor = (int)selectedCard.CardColor,
+                CardValue = (int)selectedCard.CardValue,
+                PlayerId = currentPlayer.Id,
+                GameStateId = gameId
+            });
+            
+            // Update database with drawn card
+            var unoDeckCardToRemove = context.UnoDecks
+                .Where(deckCard =>
+                    deckCard.GameStateId == gameId &&
+                    deckCard.CardColor == (int)selectedCard.CardColor &&
+                    deckCard.CardValue == (int)selectedCard.CardValue)
+                .OrderByDescending(deckCard => deckCard.Id) // Order by Id in descending order
+                .FirstOrDefault();
+            context.UnoDecks.Remove(unoDeckCardToRemove!);
+
+            await context.SaveChangesAsync();
+
+            // Get the next player index
+            gameEngine.GetNextPlayerId(gameState.CurrentPlayerIndex);
+
+            gameState.CurrentPlayerIndex = gameEngine.GameState.CurrentPlayerIndex;
+            gameState.GameDirection = gameEngine.GameState.GameDirection ? 1 : 0;
+            await context.SaveChangesAsync();
+            var nextPlayer = players[gameState.CurrentPlayerIndex];
+
+            // Continue with the next AI player if applicable
+            if (nextPlayer.Type == (int)Player.PlayerType.Ai)
+            {
+                await PlayCardAi(gameId, nextPlayer.Id);
+            }
+        }
+    }
 }

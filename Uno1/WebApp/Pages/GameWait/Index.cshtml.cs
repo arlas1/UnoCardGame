@@ -3,7 +3,6 @@ using DAL.DbEntities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
-using UnoGameEngine;
 using WebApp.GamesManager;
 
 namespace WebApp.Pages.GameWait;
@@ -30,6 +29,9 @@ public class IndexModel(AppDbContext context) : PageModel
     [BindProperty(SupportsGet = true)]
     public string? Command { get; set; }
     
+    [BindProperty(SupportsGet = true)] 
+    public Domain.Player.PlayerType PlayerType { get; set; }
+    
     public int? IsGameStarted { get; set; }
 
     public int PlayersToStart;
@@ -55,17 +57,29 @@ public class IndexModel(AppDbContext context) : PageModel
         return null!;
     }
 
-    public async Task OnPost()
+    public async Task<IActionResult> OnPost()
     {
-        Players = await context.Players.Where(player => player.GameStateId == GameId).ToListAsync();
+        if (PlayerType == Domain.Player.PlayerType.Human)
+        {
+            Players = await context.Players.Where(player => player.GameStateId == GameId).ToListAsync();
         
-        var gameManager = new GameManager(context);
-        var data = gameManager.JoinTheGame(GameId, Nickname!);
+            var gameManager = new GameManager(context);
+            var data = gameManager.JoinTheGame(GameId, Nickname!, PlayerType);
         
-        PlayerId = data.playerId;
-        MaxAmount = data.maxAmount;
+            PlayerId = data.playerId;
+            MaxAmount = data.maxAmount;
         
-        PlayersToStart = MaxAmount - Players.Count;
+            PlayersToStart = MaxAmount - Players.Count;
+        }
+        else if (PlayerType == Domain.Player.PlayerType.Ai)
+        {
+            var gameManager = new GameManager(context);
+            gameManager.JoinTheGame(GameId, Nickname!, PlayerType);
+            return RedirectToPage($"/Dashboard/Index");
+
+        }
+
+        return Page();
     }
 
 }

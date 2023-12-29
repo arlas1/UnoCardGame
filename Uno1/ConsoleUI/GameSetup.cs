@@ -13,6 +13,7 @@ public class GameSetup
         
         // Ask for Players amount
         var numPlayers = GameConfiguration.PromptForNumberOfPlayers();
+        gameEngine.GameState.PlayersMaxAmount = numPlayers;
 
         // List with all players as objects
         GameConfiguration.CreatePlayers(numPlayers, gameEngine);
@@ -21,7 +22,7 @@ public class GameSetup
         var asd = gameEngine.CheckFirstCardInGame();
         
         var gameController = new GameController(gameEngine);
-
+        gameEngine.GameState.IsGameStarted = 1;
         // Main game loop
         gameController.Run();
 

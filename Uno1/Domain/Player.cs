@@ -14,6 +14,7 @@ public class Player
         Type = type;
         Hand = new List<UnoCard>();
     }
+    
 
     public enum PlayerType
     {

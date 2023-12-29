@@ -1,4 +1,5 @@
 @page
+@using Domain
 @model IndexModel
 
 @{
@@ -57,7 +58,17 @@
                     @foreach (var player in gameState.PlayersList)
                     {
                         <p>@($"{player.Name}, {player.Type}")</p>
+                        if (gameState.ConsoleSaved == 1 && player.Type != Player.PlayerType.Ai)
+                        {
+                            <form method="post" asp-page="/GamePlay/Index" id="checkForm">
+                                <input type="hidden" name="GameId" value="@gameId" />
+                                <input type="hidden" name="PlayerId" value="@player.Id"/>
+                                <input type="hidden" name="IsBoss" value="@(player == gameState.PlayersList.First() ? 1 : 0)" />
+                                <input type="submit" value="Join as @player.Name" class="btn btn-success btn-lg"/>  @*CHECK*@
+                            </form>
+                        }
                     }
+                    
                 </td>
                 <td>
                     @(gameState.IsGameStarted == 0 ? "No" : "Yes")
@@ -73,7 +84,7 @@
                 </td>
                 <td id="@($"placesLeft_{gameId}")">
                     <script>
-                        var placesLeft = parseInt("@gameState.PlayersMaxAmount") - @gameState.PlayersList.Count;
+                        const placesLeft = parseInt("@gameState.PlayersMaxAmount") - @gameState.PlayersList.Count;
                         document.getElementById("@($"placesLeft_{gameId}")").innerText = placesLeft;
                     </script>
                 </td>
@@ -86,6 +97,10 @@
                                 <label asp-for="Nickname" class="control-label">Enter your Nickname (1 - 20 characters)</label>
                                 <input asp-for="Nickname" class="form-control" />
                                 <span asp-validation-for="Nickname" class="text-danger"></span>
+                                <select asp-for="@Model.PlayerType" name="PlayerType" class="form-control">
+                                    <option value="@Player.PlayerType.Human">Human</option>
+                                    <option value="@Player.PlayerType.Ai">Ai</option>
+                                </select>
                             </div>
                             <input type="submit" value="Join" class="btn btn-primary" />
                         </form>
@@ -102,7 +117,7 @@
             type: "GET",
             url: "/Dashboard/Index",
             success: function (data) {
-                var updatedBody = $(data).find('#gamesTable tbody');
+                const updatedBody = $(data).find('#gamesTable tbody');
 
                 $('#gamesTable tbody').html(updatedBody.html());
             }

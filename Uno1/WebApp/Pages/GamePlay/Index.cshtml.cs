@@ -44,7 +44,6 @@ public class IndexModel(DAL.AppDbContext context) : PageModel
     [BindProperty(SupportsGet = true)]
     public UnoCard.Color ChosenColor { get; set; }
 
-
     
     public async Task OnGet()
     {
@@ -53,7 +52,7 @@ public class IndexModel(DAL.AppDbContext context) : PageModel
         UnoDeck = await context.UnoDecks.Where(deck => deck.GameStateId == GameId).ToListAsync();
         StockPile = await context.StockPiles.Where(pile => pile.GameStateId == GameId).ToListAsync();
         AllHandCards = await context.Hands.Where(hand => hand.GameStateId == GameId).ToListAsync();
-        
+
         foreach (var player in Players)
         {
             foreach (var card in AllHandCards)
@@ -88,7 +87,7 @@ public class IndexModel(DAL.AppDbContext context) : PageModel
         CurrentPlayerIndex = gameState1.CurrentPlayerIndex;
         
         var currentPlayerId = players.IndexOf(players.FirstOrDefault(player => player.Id == PlayerId)!);
-
+        
         switch (Command)
         {
             case "updateState":
@@ -122,7 +121,7 @@ public class IndexModel(DAL.AppDbContext context) : PageModel
                     var playedCard = new UnoCard(Color, Value);
                     if (await gameManager.ValidateCard(GameId, playedCard, null))
                     {
-                        await gameManager.PlayCard(GameId, PlayerId, playedCard);
+                        await gameManager.PlayCardHuman(GameId, PlayerId, playedCard);
                         
                         var game = await gameManager.CheckForWinner(GameId, PlayerId);
                         if (game.hasWinner && PlayerId == game.playerId)
@@ -142,15 +141,8 @@ public class IndexModel(DAL.AppDbContext context) : PageModel
                     var playedCard = new UnoCard(Color, Value);
                     if (await gameManager.ValidateCard(GameId, playedCard, ChosenColor))
                     {
-                        await gameManager.PlayCard(GameId, PlayerId, playedCard);
-                        
-                        // var data = await gameManager.CheckForWinner(GameId, PlayerId);
-                        // if (data.hasWinner && data.playerId == gameState1.WinnerId)
-                        // {
-                        //     WinnerMessage = $"{Players.SingleOrDefault(player => player.Id == data.playerId)!.Name} won!";
-                        //
-                        //     return RedirectToPage($"/Dashboard/Index", new { message = WinnerMessage });
-                        // }
+                        await gameManager.PlayCardHuman(GameId, PlayerId, playedCard);
+
                     }
                 }
                 break;
@@ -161,7 +153,7 @@ public class IndexModel(DAL.AppDbContext context) : PageModel
         UnoDeck = await context.UnoDecks.Where(deck => deck.GameStateId == GameId).ToListAsync();
         StockPile = await context.StockPiles.Where(pile => pile.GameStateId == GameId).ToListAsync();
         AllHandCards = await context.Hands.Where(hand => hand.GameStateId == GameId).ToListAsync();
-            
+        
         foreach (var player in Players)
         {
             foreach (var card in AllHandCards)

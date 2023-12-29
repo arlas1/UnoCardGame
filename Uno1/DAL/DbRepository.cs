@@ -13,7 +13,7 @@ public static class DbRepository
     public static AppDbContext GetContext()
     {
         var contextOptions = new DbContextOptionsBuilder<AppDbContext>()
-            .UseSqlite("Server=DESKTOP-FEPAJ2M\\MSSQLSERVER01;Database=Uno;Trusted_Connection=True;TrustServerCertificate=True;")
+            .UseSqlServer("Server=DESKTOP-FEPAJ2M\\MSSQLSERVER01;Database=Uno;Trusted_Connection=True;TrustServerCertificate=True;")
             .EnableDetailedErrors()
             .EnableSensitiveDataLogging()
             .Options;
@@ -34,7 +34,11 @@ public static class DbRepository
             GameDirection = gameEngine.GameState.GameDirection ? 1 : 0,
             CurrentPlayerIndex = gameEngine.GameState.CurrentPlayerIndex,
             IsColorChosen = gameEngine.GameState.IsColorChosen ? 1 : 0,
-            SelectedCardIndex = gameEngine.GameState.SelectedCardIndex
+            SelectedCardIndex = gameEngine.GameState.SelectedCardIndex,
+            PlayersMaxAmount = gameEngine.GameState.PlayersMaxAmount,
+            IsGameStarted = gameEngine.GameState.IsGameStarted,
+            ConsoleSaved = 1
+            
         };
 
         context.GameStates.Add(gameStateEntity);

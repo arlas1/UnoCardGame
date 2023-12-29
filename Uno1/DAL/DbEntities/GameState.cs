@@ -14,4 +14,6 @@ public class GameState
     public int IsGameStarted { get; set; }
     public int IsGameEnded { get; set; }
     public int WinnerId { get; set; }
+
+    public int ConsoleSaved { get; set; }
 }

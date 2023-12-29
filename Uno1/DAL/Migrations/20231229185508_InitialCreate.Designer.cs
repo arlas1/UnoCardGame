@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DAL.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20231228154045_InitialCreate")]
+    [Migration("20231229185508_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -49,6 +49,9 @@ namespace DAL.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("CardColorChoice")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ConsoleSaved")
                         .HasColumnType("int");
 
                     b.Property<int>("CurrentPlayerIndex")

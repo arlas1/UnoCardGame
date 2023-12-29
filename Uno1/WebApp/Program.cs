@@ -1,5 +1,6 @@
 using DAL;
 using Microsoft.EntityFrameworkCore;
+using WebApp.GamesManager;
 
 
 var builder = WebApplication.CreateBuilder(args);

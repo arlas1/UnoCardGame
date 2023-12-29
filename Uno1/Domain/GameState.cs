@@ -1,6 +1,4 @@
-﻿using System.Text.Json;
-
-namespace Domain;
+﻿namespace Domain;
 
 public class GameState
 {
@@ -20,7 +18,9 @@ public class GameState
     public int PlayersMaxAmount { get; set; }
     public int IsGameStarted { get; set; } = 0;
     public int IsGameEnded { get; set; } = 0;
-    
+
+    public int ConsoleSaved { get; set; }
+
     // For the game start only. Property does not go into db.
     public int RepositoryChoice { get; set; }
 }

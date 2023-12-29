@@ -48,6 +48,9 @@ namespace DAL.Migrations
                     b.Property<int>("CardColorChoice")
                         .HasColumnType("int");
 
+                    b.Property<int>("ConsoleSaved")
+                        .HasColumnType("int");
+
                     b.Property<int>("CurrentPlayerIndex")
                         .HasColumnType("int");
 

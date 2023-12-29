@@ -38,7 +38,8 @@ namespace DAL.Migrations
                     PlayersMaxAmount = table.Column<int>(type: "int", nullable: false),
                     IsGameStarted = table.Column<int>(type: "int", nullable: false),
                     IsGameEnded = table.Column<int>(type: "int", nullable: false),
-                    WinnerId = table.Column<int>(type: "int", nullable: false)
+                    WinnerId = table.Column<int>(type: "int", nullable: false),
+                    ConsoleSaved = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {

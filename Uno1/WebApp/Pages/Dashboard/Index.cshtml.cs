@@ -19,6 +19,9 @@ public class IndexModel(AppDbContext context) : PageModel
     public string? Nickname { get; set; }
     
     [BindProperty(SupportsGet = true)] 
+    public Domain.Player.PlayerType PlayerType { get; set; }
+    
+    [BindProperty(SupportsGet = true)] 
     public int GameId { get; set; }
     
     [BindProperty(SupportsGet = true)] 
@@ -42,14 +45,15 @@ public class IndexModel(AppDbContext context) : PageModel
             Games[gameState.Id] = new Domain.GameState
             {
                 IsGameStarted = gameState.IsGameStarted,
-                PlayersMaxAmount = gameState.PlayersMaxAmount
+                PlayersMaxAmount = gameState.PlayersMaxAmount,
+                ConsoleSaved = gameState.ConsoleSaved == 1 ? 1 : 0
             };
 
             foreach (var player in Players)
             {
                 if (player.GameStateId == gameState.Id)
                 {
-                    var playerToAdd = new Domain.Player(player.Id, player.Name, Domain.Player.PlayerType.Human);
+                    var playerToAdd = new Domain.Player(player.Id, player.Name, (Domain.Player.PlayerType) player.Type);
                     Games[gameState.Id].PlayersList.Add(playerToAdd);
                 }
             }
