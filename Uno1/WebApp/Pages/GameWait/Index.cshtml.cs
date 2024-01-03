@@ -64,7 +64,7 @@ public class IndexModel(AppDbContext context) : PageModel
             Players = await context.Players.Where(player => player.GameStateId == GameId).ToListAsync();
         
             var gameManager = new GameManager(context);
-            var data = gameManager.JoinTheGame(GameId, Nickname!, PlayerType);
+            var data = await gameManager.JoinTheGame(GameId, Nickname!, PlayerType);
         
             PlayerId = data.playerId;
             MaxAmount = data.maxAmount;
@@ -74,7 +74,7 @@ public class IndexModel(AppDbContext context) : PageModel
         else if (PlayerType == Domain.Player.PlayerType.Ai)
         {
             var gameManager = new GameManager(context);
-            gameManager.JoinTheGame(GameId, Nickname!, PlayerType);
+            await gameManager.JoinTheGame(GameId, Nickname!, PlayerType);
             return RedirectToPage($"/Dashboard/Index");
 
         }

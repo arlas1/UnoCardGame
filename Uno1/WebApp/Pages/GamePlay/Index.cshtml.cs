@@ -72,8 +72,6 @@ public class IndexModel(DAL.AppDbContext context) : PageModel
         Direction = GameState.GameDirection == 0 ? "Clockwise" : "Counterclockwise";
         IsColorChosen = GameState.IsColorChosen;
         CurrentPlayerIndex = GameState.CurrentPlayerIndex;
-
-        // CardColorChoice = GameState.CardColorChoice;
     }
 
     public async Task<IActionResult> OnPost()
@@ -149,6 +147,12 @@ public class IndexModel(DAL.AppDbContext context) : PageModel
             }
         }
         GameState = context.GameStates.SingleOrDefault(state => state.Id == GameId)!;
+        if (GameState.IsGameEnded == 1)
+        {
+            var winnerMessage = $"{players.SingleOrDefault(player => player.Id == GameState.WinnerId)!.Name} won!";
+                
+            return RedirectToPage($"/Dashboard/Index", new { WinnerMessage = winnerMessage }); 
+        }
         Players = await context.Players.Where(player => player.GameStateId == GameId).ToListAsync();
         UnoDeck = await context.UnoDecks.Where(deck => deck.GameStateId == GameId).ToListAsync();
         StockPile = await context.StockPiles.Where(pile => pile.GameStateId == GameId).ToListAsync();
@@ -184,5 +188,10 @@ public class IndexModel(DAL.AppDbContext context) : PageModel
     public string GetCardValue(int cardValue)
     {
         return ((UnoCard.Value)cardValue).ToString();
+    }
+
+    public IActionResult Winner(bool hasWinner)
+    {
+        return RedirectToPage($"/Dashboard/Index");
     }
 }
