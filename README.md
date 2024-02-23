@@ -1,6 +1,3 @@
-# Uno - card game
+# Uno - card game (Console/Web)
 
-Artur Lasimer
-223101IADB
-arlasi@taltech.ee
-uniId - arlasi
+Project built using .NET 8, Razor Pages, JavaScript, Entity Framework Core, MS SQL, Bootstrap
