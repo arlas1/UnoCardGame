@@ -45,8 +45,9 @@ public class IndexModel(AppDbContext context) : PageModel
             Games[gameState.Id] = new Domain.GameState
             {
                 IsGameStarted = gameState.IsGameStarted,
+                IsGameEnded = gameState.IsGameEnded,
                 PlayersMaxAmount = gameState.PlayersMaxAmount,
-                ConsoleSaved = gameState.ConsoleSaved == 1 ? 1 : 0
+                IsConsoleSaved = gameState.ConsoleSaved == 1 ? 1 : 0
             };
 
             foreach (var player in Players)

@@ -11,19 +11,6 @@ namespace DAL.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "ConnectedClients",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ConnectionId = table.Column<string>(type: "nvarchar(max)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ConnectedClients", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "GameStates",
                 columns: table => new
                 {
@@ -112,9 +99,6 @@ namespace DAL.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "ConnectedClients");
-
             migrationBuilder.DropTable(
                 name: "GameStates");
 

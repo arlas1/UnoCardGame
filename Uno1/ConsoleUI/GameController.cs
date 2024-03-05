@@ -6,89 +6,61 @@ namespace ConsoleUI;
 
 public class GameController
 {
+    private readonly GameEngine _gameEngine;
     
-    private GameEngine _gameEngine;
+    private Player _currentPlayer = null!;
+    private int _currentPlayerId;
+    private List<UnoCard> _currentPlayerHand = null!;
 
     public GameController(GameEngine gameEngine)
     {
         _gameEngine = gameEngine;
     }
+    
     public void Run()
     {
-        var exitGame = false;
+        var gameEnded = false;
         
-        while (!exitGame)
+        while (!gameEnded)
         {
-            var currentPlayerHand = _gameEngine.GameState.PlayersList[_gameEngine.GameState.CurrentPlayerIndex].Hand;
-            var currentPlayer = _gameEngine.GameState.PlayersList[_gameEngine.GameState.CurrentPlayerIndex];
-            var playerId = _gameEngine.GameState.CurrentPlayerIndex;
+            UpdateGameControllerData();
             
-            if (currentPlayer.Type == Player.PlayerType.Ai)
+            if (_currentPlayer.Type == Player.PlayerType.Ai)
             {
-                var validCards = currentPlayer.Hand
+                var validCards = _currentPlayer.Hand
                     .Where(_gameEngine.IsValidCardPlay)
                     .ToList();
 
-                UnoCard selectedCard;
-
                 if (validCards.Count > 0)
                 {
-                    // Choose a random valid card
-                    var randomIndex = new Random().Next(0, validCards.Count);
-                    selectedCard = validCards[randomIndex];
+                    var selectedCard = AiChoseRandomCard(validCards);
                     
-                    currentPlayer.Hand.Remove(selectedCard);
-                    _gameEngine.GameState.StockPile.Add(selectedCard);
-                    
-                    if (_gameEngine.GameState.PlayersList[playerId].Hand.Count == 0)
+                    var aiPlayerWon = CheckDidThePlayerWin();
+                    if (aiPlayerWon)
                     {
-                        Console.WriteLine(
-                            $"{_gameEngine.GameState.PlayersList[_gameEngine.GameState.CurrentPlayerIndex + 1].Name} wins! Congratulations!");
-                        _gameEngine.GameState.IsColorChosen = false;
                         break;
                     }
 
-                    Console.WriteLine($"{currentPlayer.Name} placed {selectedCard}");
-
-                    if (selectedCard.CardValue != UnoCard.Value.Wild)
-                    {
-                        _gameEngine.SubmitPlayerCard(selectedCard, playerId);
-                    }
-                    else
-                    {
-                        GameConfiguration.PromptForWildCardColorAi(_gameEngine);
-                    }
-                
-
-                    if (selectedCard.CardColor == _gameEngine.GameState.CardColorChoice)
-                    {
-                        _gameEngine.GameState.IsColorChosen = false;
-                    }
+                    Console.WriteLine($"{_currentPlayer.Name} placed {selectedCard}");
+                    SubmitAiPlayerMove(selectedCard);
                 }
                 else
                 {
-                    // If no valid cards, draw a card
-                    selectedCard = _gameEngine.GameState.UnoDeck.DrawCard();
-                    currentPlayer.Hand.Add(selectedCard);
-                    // Console.WriteLine($"{currentPlayer.Name} took {selectedCard}");
+                    PlayerTakeCardFromDeck();
                 }
-
                 
-                // Player switch + exclusive control for skip card
-                _gameEngine.GetNextPlayerId(playerId);
-                
+                // Next player turn
+                _gameEngine.GetNextPlayerId(_currentPlayerId);
             }
-            else
+            
+            else if (_currentPlayer.Type == Player.PlayerType.Human)
             {
                 ConsoleVisualization.DisplayGameHeader(_gameEngine);
-                
-                ConsoleVisualization.DisplayPlayerHand(currentPlayerHand, _gameEngine);
-
+                ConsoleVisualization.DisplayPlayerHand(_currentPlayerHand, _gameEngine);
                 ConsoleKeyInfo key;
 
                 do
                 {
-
                     while (Console.KeyAvailable)
                     {
                         Console.ReadKey(true);
@@ -96,160 +68,198 @@ public class GameController
 
                     key = Console.ReadKey();
 
+                    // Move between the cards in hand
                     switch (key.Key)
                     {
                         case ConsoleKey.UpArrow:
                             if (_gameEngine.GameState.SelectedCardIndex == 0)
                             {
-                                // If at the first card, move to the last card
-                                _gameEngine.GameState.SelectedCardIndex = currentPlayerHand.Count;
+                                _gameEngine.GameState.SelectedCardIndex = _currentPlayerHand.Count;
                             }
                             else
                             {
-                                // Move up normally
                                 _gameEngine.GameState.SelectedCardIndex =
-                                    (_gameEngine.GameState.SelectedCardIndex - 1) % (currentPlayerHand.Count + 1);
+                                    (_gameEngine.GameState.SelectedCardIndex - 1) % (_currentPlayerHand.Count + 1);
                             }
 
                             break;
                         case ConsoleKey.DownArrow:
                             _gameEngine.GameState.SelectedCardIndex =
-                                (_gameEngine.GameState.SelectedCardIndex + 1) % (currentPlayerHand.Count + 1);
+                                (_gameEngine.GameState.SelectedCardIndex + 1) % (_currentPlayerHand.Count + 1);
                             break;
                     }
 
                     Console.Clear();
                     ConsoleVisualization.DisplayGameHeader(_gameEngine);
-
-                    Console.WriteLine($"{_gameEngine.GameState.PlayersList[_gameEngine.GameState.CurrentPlayerIndex].Name}'s hand:");
-                    for (var i = 0; i < currentPlayerHand.Count; i++)
-                    {
-                        if (i == _gameEngine.GameState.SelectedCardIndex)
-                        {
-                            Console.BackgroundColor = ConsoleColor.Gray;
-                            Console.ForegroundColor = ConsoleColor.Black;
-                        }
-
-                        Console.WriteLine($"{i + 1}. {currentPlayerHand[i]}");
-
-                        Console.ResetColor();
-                    }
-
-                    if (_gameEngine.GameState.SelectedCardIndex == currentPlayerHand.Count)
-                    {
-                        Console.BackgroundColor = ConsoleColor.Gray;
-                        Console.ForegroundColor = ConsoleColor.Black;
-                    }
-
-                    Console.WriteLine($"{currentPlayerHand.Count + 1}. -> draw a card <-");
-
-                    Console.ResetColor();
-
-                    Console.WriteLine("=======================");
-                    Console.WriteLine("Press RIGHT ARROW to SAVE and EXIT to the main menu.");
-                    Console.WriteLine("                        OR");
-                    Console.WriteLine("Press LEFT ARROW to EXIT without saving game state.");
-
-
+                    ConsoleVisualization.DisplayPlayerHand(_currentPlayerHand, _gameEngine);
+                    
                 } while (key.Key != ConsoleKey.Enter && key.Key != ConsoleKey.RightArrow &&
                          key.Key != ConsoleKey.LeftArrow);
 
                 if (key.Key == ConsoleKey.RightArrow)
                 {
-                    var gameEngine = new GameEngine();
-
-                    GameConfiguration.PromptForRepositoryType(gameEngine);
-                    
-                    switch (gameEngine.GameState.RepositoryChoice)
-                    {
-                        case 1:
-                            JsonRepository.SaveIntoJson(_gameEngine);
-                            Menu.Menu.RunMenu(() => GameSetup.NewGame(gameEngine), () => GameSetup.LoadGameJson(gameEngine));
-                            break;
-                        case 2:
-                            DbRepository.SaveIntoDb(_gameEngine);
-                            Menu.Menu.RunMenu(() => GameSetup.NewGame(gameEngine), () => GameSetup.LoadGameDb(gameEngine));
-                            break;
-                    }
-                    
-                    exitGame = true; // Exit the game loop
+                    SaveAndExit();
+                    gameEnded = true;
                 }
 
                 if (key.Key == ConsoleKey.LeftArrow)
                 {
-                    var gameEngine = new GameEngine();
-
-                    GameConfiguration.PromptForRepositoryType(gameEngine);
-
-                    switch (gameEngine.GameState.RepositoryChoice)
-                    {
-                        case 1:
-                            Menu.Menu.RunMenu(() => GameSetup.NewGame(gameEngine), () => GameSetup.LoadGameJson(gameEngine));
-                            break;
-                        case 2:
-                            Menu.Menu.RunMenu(() => GameSetup.NewGame(gameEngine), () => GameSetup.LoadGameDb(gameEngine));
-                            break;
-                    }
-
-                    exitGame = true; // Exit the game loop
+                    ExitWithoutSaving();
+                    gameEnded = true;
                 }
-
+                
+                // Player have chosen (to take) a card
                 else
                 {
-                    var isValid = false;
+                    var isValidMove = false;
                     
-                    if (_gameEngine.GameState.SelectedCardIndex == currentPlayerHand.Count)
+                    if (_gameEngine.GameState.SelectedCardIndex == _currentPlayerHand.Count)
                     {
-                        currentPlayerHand.Add(_gameEngine.GameState.UnoDeck.DrawCard());
-                        isValid = true;
+                        PlayerTakeCardFromDeck();
+                        isValidMove = true;
                     }
                     else
                     {
-                        var selectedCard = currentPlayerHand[_gameEngine.GameState.SelectedCardIndex];
+                        var selectedCard = _currentPlayerHand[_gameEngine.GameState.SelectedCardIndex];
                         if (_gameEngine.IsValidCardPlay(selectedCard))
                         {
-                            currentPlayerHand.RemoveAt(_gameEngine.GameState.SelectedCardIndex);
-                            _gameEngine.GameState.StockPile.Add(selectedCard);
+                            PlaceCardOnStockPile(selectedCard);
 
-                            if (_gameEngine.GameState.PlayersList[playerId].Hand.Count == 0)
+                            var humanPlayerWon = CheckDidThePlayerWin();
+                            if (humanPlayerWon)
                             {
-                                Console.WriteLine(
-                                    $"{_gameEngine.GameState.PlayersList[_gameEngine.GameState.CurrentPlayerIndex].Name} wins! Congratulations!");
-                                _gameEngine.GameState.IsColorChosen = false;
                                 break;
                             }
 
-                            if (selectedCard.CardValue != UnoCard.Value.Wild)
-                            {
-                                _gameEngine.SubmitPlayerCard(selectedCard, playerId);
-                            }
-                            else
-                            {
-                                GameConfiguration.PromptForWildCardColorHuman(_gameEngine);
-                            }
-
-                            if (selectedCard.CardColor == _gameEngine.GameState.CardColorChoice)
-                            {
-                                _gameEngine.GameState.IsColorChosen = false;
-                            }
-
-                            isValid = true;
+                            SubmitHumanPlayerMove(selectedCard);
+                            isValidMove = true;
                         }
                     }
                     
-                    if (!isValid)
+                    if (!isValidMove)
                     {
                         Console.Clear();
                         continue;
                     }
 
-                    // Player switch + exclusive control for skip card
-                    _gameEngine.GetNextPlayerId(playerId);
+                    // Next player turn
+                    _gameEngine.GetNextPlayerId(_currentPlayerId);
                 }
             }
         }
     }
+    
+    private void UpdateGameControllerData()
+    {
+        _currentPlayerHand = _gameEngine.GameState.PlayersList[_gameEngine.GameState.CurrentPlayerIndex].Hand;
+        _currentPlayer = _gameEngine.GameState.PlayersList[_gameEngine.GameState.CurrentPlayerIndex];
+        _currentPlayerId = _gameEngine.GameState.CurrentPlayerIndex;
+    }
 
+    private UnoCard AiChoseRandomCard(IReadOnlyList<UnoCard> validCards)
+    {
+        var randomIndex = new Random().Next(0, validCards.Count);
+        var selectedCard = validCards[randomIndex];
+                    
+        PlaceCardOnStockPile(selectedCard);
 
+        return selectedCard;
+    }
+
+    private void PlaceCardOnStockPile(UnoCard selectedCard)
+    {
+        _currentPlayer.Hand.Remove(selectedCard);
+        _gameEngine.GameState.StockPile.Add(selectedCard);
+    }
+
+    private void PlayerTakeCardFromDeck()
+    {
+        _currentPlayerHand.Add(_gameEngine.GameState.UnoDeck.DrawCard());
+    }
+
+    private void SubmitAiPlayerMove(UnoCard selectedCard)
+    {
+        if (selectedCard.CardValue != UnoCard.Value.Wild)
+        {
+            _gameEngine.SubmitPlayerCard(selectedCard, _currentPlayerId);
+        }
+        else
+        {
+            GameConfiguration.PromptForWildCardColorAi(_gameEngine);
+        }
+
+        if (selectedCard.CardColor == _gameEngine.GameState.CardColorChoice)
+        {
+            _gameEngine.GameState.IsColorChosen = false;
+        }
+    }
+    
+    private void SubmitHumanPlayerMove(UnoCard selectedCard)
+    {
+        if (selectedCard.CardValue != UnoCard.Value.Wild)
+        {
+            _gameEngine.SubmitPlayerCard(selectedCard, _currentPlayerId);
+        }
+        else
+        {
+            GameConfiguration.PromptForWildCardColorHuman(_gameEngine);
+        }
+        
+        if (selectedCard.CardColor == _gameEngine.GameState.CardColorChoice)
+        {
+            _gameEngine.GameState.IsColorChosen = false;
+        }
+    }
+    
+    private bool CheckDidThePlayerWin()
+    {
+        if (_gameEngine.GameState.PlayersList[_currentPlayerId].Hand.Count == 0)
+        {
+            Console.WriteLine(
+                $"{_gameEngine.GameState.PlayersList[_gameEngine.GameState.CurrentPlayerIndex].Name} wins! Congratulations!");
+            _gameEngine.GameState.IsColorChosen = false;
+            return true;
+        }
+
+        return false;
+    }
+
+    private void SaveAndExit()
+    {
+        var gameEngine = new GameEngine();
+
+        GameConfiguration.PromptForRepositoryType(gameEngine);
+
+        switch (gameEngine.GameState.RepositoryChoice)
+        {
+            case 1:
+                JsonRepository.SaveIntoJson(_gameEngine);
+                Menu.Menu.RunMenu(() => GameSetup.NewGame(gameEngine), () => GameSetup.LoadGameJson(gameEngine));
+                break;
+            case 2:
+                DbRepository.SaveIntoDb(_gameEngine);
+                Menu.Menu.RunMenu(() => GameSetup.NewGame(gameEngine), () => GameSetup.LoadGameDb(gameEngine));
+                break;
+        }
+
+    }
+    
+    private static void ExitWithoutSaving()
+    {
+        var gameEngine = new GameEngine();
+
+        GameConfiguration.PromptForRepositoryType(gameEngine);
+
+        switch (gameEngine.GameState.RepositoryChoice)
+        {
+            case 1:
+                Menu.Menu.RunMenu(() => GameSetup.NewGame(gameEngine), () => GameSetup.LoadGameJson(gameEngine));
+                break;
+            case 2:
+                Menu.Menu.RunMenu(() => GameSetup.NewGame(gameEngine), () => GameSetup.LoadGameDb(gameEngine));
+                break;
+        }
+
+    }
     
 }

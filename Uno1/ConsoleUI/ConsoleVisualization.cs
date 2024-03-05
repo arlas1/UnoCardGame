@@ -31,11 +31,9 @@ public static class ConsoleVisualization
 
     }
     
-    
     public static void DisplayPlayerHand(IReadOnlyList<UnoCard> currentPlayerHand, GameEngine gameEngine)
     {
         Console.WriteLine($"{gameEngine.GameState.PlayersList[gameEngine.GameState.CurrentPlayerIndex].Name}'s hand:");
-        gameEngine.GameState.SelectedCardIndex = 0;
         for (var i = 0; i < currentPlayerHand.Count; i++)
         {
             if (i == gameEngine.GameState.SelectedCardIndex)
@@ -63,7 +61,6 @@ public static class ConsoleVisualization
         Console.WriteLine("Press RIGHT ARROW to SAVE and EXIT to the main menu.");
         Console.WriteLine("                        OR");
         Console.WriteLine("Press LEFT ARROW to EXIT without saving game state.");
-
     }
     
 }

@@ -38,7 +38,7 @@ public class GameEngine
         {
             var initialCard = GameState.UnoDeck.DrawCard();
             initialTakenCard = initialCard;
-            // Invalid card types for the start
+            
             if (initialCard.CardValue is
                 UnoCard.Value.Wild or
                 UnoCard.Value.DrawTwo or
@@ -72,7 +72,6 @@ public class GameEngine
                 card.CardColor == UnoCard.Color.Wild);
     }
     
-    
     public void GetNextPlayerId(int playerId)
     {
         if (GameState.StockPile.Last().CardValue == UnoCard.Value.Skip)
@@ -104,12 +103,10 @@ public class GameEngine
         }
     }
     
-    
     public void SubmitPlayerCard(UnoCard card, int playerId)
     {
         if (card.CardValue == UnoCard.Value.Reverse)
         {
-            
             GameState.GameDirection = !GameState.GameDirection;
         }
 
@@ -141,14 +138,12 @@ public class GameEngine
             }
         }
     }
-
     
     private void DrawTwoCards(int playerId)
     {
         GameState.PlayersList[playerId].Hand.Add(GameState.UnoDeck.DrawCard());
         GameState.PlayersList[playerId].Hand.Add(GameState.UnoDeck.DrawCard());
     }
-    
     
     private void DrawFourCards(int playerId)
     {

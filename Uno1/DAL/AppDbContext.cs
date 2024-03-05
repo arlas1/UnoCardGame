@@ -3,14 +3,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DAL;
 
-
 public class AppDbContext : DbContext
 {
     public DbSet<GameState> GameStates { get; set; } = default!;
     public DbSet<Player> Players { get; set; } = default!;
-    
-    public DbSet<ConnectedClient> ConnectedClients { get; set; } = default!;
-    
     public DbSet<Hand> Hands { get; set; } = default!;
     public DbSet<StockPile> StockPiles { get; set; } = default!;
     public DbSet<UnoDeck> UnoDecks { get; set; } = default!;

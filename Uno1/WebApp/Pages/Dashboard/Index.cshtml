@@ -29,10 +29,10 @@
                 Current players info
             </th>
             <th>
-                Does Game started ?
+                Game started ?
             </th>
             <th>
-                Does Game ended ?
+                Game ended ?
             </th>
             <th>
                 Places in the Game Left
@@ -58,13 +58,14 @@
                     @foreach (var player in gameState.PlayersList)
                     {
                         <p>@($"{player.Name}, {player.Type}")</p>
-                        if (gameState.ConsoleSaved == 1 && player.Type != Player.PlayerType.Ai)
+                        
+                        if (gameState is { IsGameEnded: 0, IsConsoleSaved: 1 })
                         {
                             <form method="post" asp-page="/GamePlay/Index" id="checkForm">
                                 <input type="hidden" name="GameId" value="@gameId" />
                                 <input type="hidden" name="PlayerId" value="@player.Id"/>
                                 <input type="hidden" name="IsBoss" value="@(player == gameState.PlayersList.First() ? 1 : 0)" />
-                                <input type="submit" value="Join as @player.Name" class="btn btn-success btn-lg"/>  @*CHECK*@
+                                <input type="submit" value="Join as @player.Name" class="btn btn-success btn-lg"/>
                             </form>
                         }
                     }

@@ -12,7 +12,7 @@ namespace WebApp.GamesManager;
 public class GameManager(AppDbContext context)
 {
     public (int gameId, int playerId) CreateTheGame(string nickname, int playersMaxAmount, int cardsMaxInHand,
-        UnoCard.Value? cardValueToAvoid)
+                                                    UnoCard.Value? cardValueToAvoid)
     {
         var gameEngine = new GameEngine()
         {
@@ -52,8 +52,7 @@ public class GameManager(AppDbContext context)
 
         context.GameStates.Add(gameStateEntity);
         context.SaveChanges();
-
-
+        
         foreach (var card in gameEngine.GameState.UnoDeck.SerializedCards)
         {
             var unoDeckEntity = new DAL.DbEntities.UnoDeck()

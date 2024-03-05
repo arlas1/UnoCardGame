@@ -1,5 +1,4 @@
-﻿
-using Domain;
+﻿using Domain;
 using DAL.DbEntities;
 using Microsoft.EntityFrameworkCore;
 using UnoGameEngine;
@@ -8,8 +7,6 @@ namespace DAL;
 
 public static class DbRepository
 {
-    
-    // Get context from the db
     public static AppDbContext GetContext()
     {
         var contextOptions = new DbContextOptionsBuilder<AppDbContext>()
@@ -19,11 +16,8 @@ public static class DbRepository
             .Options;
 
         return new AppDbContext(contextOptions);
-        
     }
-
-
-    // Save to the db
+    
     public static void SaveIntoDb(GameEngine gameEngine)
     {
         var context = GetContext();
@@ -42,7 +36,7 @@ public static class DbRepository
         };
 
         context.GameStates.Add(gameStateEntity);
-        context.SaveChanges(); // Save changes to get the ID
+        context.SaveChanges();
 
         foreach (var player in gameEngine.GameState.PlayersList)
         {
@@ -54,7 +48,7 @@ public static class DbRepository
             };
 
             context.Players.Add(playerEntity);
-            context.SaveChanges(); // Save changes to get the ID
+            context.SaveChanges();
 
             foreach (var card in player.Hand)
             {
@@ -96,11 +90,9 @@ public static class DbRepository
 
         context.SaveChanges();
     }
-
-    // Load from the db
+    
     public static void LoadFromDb(int gameStateId, AppDbContext context, GameEngine gameEngine)
     {
-        
         var gameStateEntity = context.GameStates.FirstOrDefault(g => g.Id == gameStateId);
 
         if (gameStateEntity != null)
@@ -110,57 +102,46 @@ public static class DbRepository
             gameEngine.GameState.IsColorChosen = gameStateEntity.IsColorChosen == 1;
             gameEngine.GameState.SelectedCardIndex = gameStateEntity.SelectedCardIndex;
             
-            
+            // Retrieve players and hands
             var players = context.Players.Where(p => p.GameStateId == gameStateEntity.Id).ToList();
-
+            
             gameEngine.GameState.PlayersList.Clear();
             foreach (var playerEntity in players)
             {
                 var player = new Domain.Player(playerEntity.Id, playerEntity.Name,
                     (Domain.Player.PlayerType)playerEntity.Type);
-
-                // By gamestate and player id
+                
                 var cardsInHand = context.Hands
                     .Where(h => h.GameStateId == gameStateEntity.Id && h.PlayerId == playerEntity.Id)
+                    .Select(h => new UnoCard((UnoCard.Color)h.CardColor, (UnoCard.Value)h.CardValue))
                     .ToList();
-
                 
-                foreach (var cardEntity in cardsInHand)
-                {
-                    var card = new UnoCard((UnoCard.Color)cardEntity.CardColor,
-                        (UnoCard.Value)cardEntity.CardValue);
-                    player.Hand.Add(card);
-                }
+                player.Hand.AddRange(cardsInHand);
 
                 gameEngine.GameState.PlayersList.Add(player);
             }
-
             
+            // Retrieve stockpile cards
             var stockPileCards = context.StockPiles
                 .Where(s => s.GameStateId == gameStateEntity.Id)
+                .Select(s => new UnoCard((UnoCard.Color)s.CardColor, (UnoCard.Value)s.CardValue))
                 .ToList();
-
-            gameEngine.GameState.StockPile.Clear();
-            foreach (var cardEntity in stockPileCards)
-            {
-                var card = new UnoCard((UnoCard.Color)cardEntity.CardColor,
-                    (UnoCard.Value)cardEntity.CardValue);
-                gameEngine.GameState.StockPile.Add(card);
-            }
-
             
+            gameEngine.GameState.StockPile.Clear();
+            gameEngine.GameState.StockPile.AddRange(stockPileCards);
+            
+            // Retrieve deck cards
             var unoDeckCards = context.UnoDecks
                 .Where(u => u.GameStateId == gameStateEntity.Id)
+                .Select(u => new UnoCard((UnoCard.Color)u.CardColor, (UnoCard.Value)u.CardValue))
                 .ToList();
-
+            
             gameEngine.GameState.UnoDeck.Clear();
-            foreach (var cardEntity in unoDeckCards)
+            foreach (var card in unoDeckCards)
             {
-                var card = new UnoCard((UnoCard.Color)cardEntity.CardColor,
-                    (UnoCard.Value)cardEntity.CardValue);
                 gameEngine.GameState.UnoDeck.AddCardToDeck(card);
             }
         }
     }
-
+        
 }

@@ -1,6 +1,6 @@
 ﻿namespace Menu;
 
-public class Menu
+public static class Menu
 {
     public static void RunMenu(Action newGameMethod, Action loadGameMethod)
     {

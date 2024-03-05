@@ -3,24 +3,16 @@ using DAL.DbEntities;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 
-// using WebApp.GameHub;
 
 namespace WebApp.Pages;
 
-public class IndexModel : PageModel
+public class IndexModel(AppDbContext context) : PageModel
 {
-    private readonly AppDbContext _context;
     public IList<GameState> GameStates { get;set; } = default!;
-    
-    
-    public IndexModel(AppDbContext context)
+
+
+    private async Task OnGetAsync()
     {
-        _context = context;
-    }
-    
-    
-    public async Task OnGetAsync()
-    {
-        GameStates = await _context.GameStates.ToListAsync();
+        GameStates = await context.GameStates.ToListAsync();
     }
 }

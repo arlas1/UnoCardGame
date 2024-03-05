@@ -76,7 +76,6 @@ public class IndexModel(DAL.AppDbContext context) : PageModel
 
     public async Task<IActionResult> OnPost()
     {
-        
         var gameManager = new GameManager(context);
         var players = await context.Players.Where(player => player.GameStateId == GameId)
             .OrderBy(player => player.Id)
@@ -146,13 +145,15 @@ public class IndexModel(DAL.AppDbContext context) : PageModel
                 break;
             }
         }
+        
         GameState = context.GameStates.SingleOrDefault(state => state.Id == GameId)!;
         if (GameState.IsGameEnded == 1)
         {
-            var winnerMessage = $"{players.SingleOrDefault(player => player.Id == GameState.WinnerId)!.Name} won!";
+            var winnerMessage = $"{players.SingleOrDefault(player => player.Id == GameState.WinnerId)!.Name} won in game Nr.{GameState.Id}!";
                 
             return RedirectToPage($"/Dashboard/Index", new { WinnerMessage = winnerMessage }); 
         }
+        
         Players = await context.Players.Where(player => player.GameStateId == GameId).ToListAsync();
         UnoDeck = await context.UnoDecks.Where(deck => deck.GameStateId == GameId).ToListAsync();
         StockPile = await context.StockPiles.Where(pile => pile.GameStateId == GameId).ToListAsync();
@@ -180,16 +181,17 @@ public class IndexModel(DAL.AppDbContext context) : PageModel
         ChosenColor = (UnoCard.Color)GameState.CardColorChoice;
         return Page();
     }
+    
     public string GetCardColor(int cardColor)
     {
         return ((UnoCard.Color)cardColor).ToString();
     }
-
+    
     public string GetCardValue(int cardValue)
     {
         return ((UnoCard.Value)cardValue).ToString();
     }
-
+    
     public IActionResult Winner(bool hasWinner)
     {
         return RedirectToPage($"/Dashboard/Index");

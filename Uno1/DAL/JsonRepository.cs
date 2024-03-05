@@ -18,11 +18,10 @@ public class JsonRepository
         var jsonString = JsonSerializer.Serialize(gameStateCopy, jsonOptions);
 
         const string jsonFolderPath = @"C:\Users\lasim\RiderProjects\icd0008-23f\Uno1\DAL\JsonSaves/";
-            
-        // Get the count of existing JSON files in the folder
-        var fileIndex = Directory.GetFiles(jsonFolderPath, "*.json").Length + 1;
+        
+        var fileAmount = Directory.GetFiles(jsonFolderPath, "*.json").Length + 1;
 
-        var filePath = Path.Combine(jsonFolderPath, $"{fileIndex}.json");
+        var filePath = Path.Combine(jsonFolderPath, $"{fileAmount}.json");
 
         File.WriteAllText(filePath, jsonString);
     }
