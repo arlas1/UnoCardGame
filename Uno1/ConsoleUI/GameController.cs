@@ -17,7 +17,7 @@ public class GameController
         _gameEngine = gameEngine;
     }
     
-    public void Run()
+    public void Run() 
     {
         var gameEnded = false;
         
@@ -93,15 +93,16 @@ public class GameController
                     ConsoleVisualization.DisplayGameHeader(_gameEngine);
                     ConsoleVisualization.DisplayPlayerHand(_currentPlayerHand, _gameEngine);
                     
-                } while (key.Key != ConsoleKey.Enter && key.Key != ConsoleKey.RightArrow &&
+                } while (key.Key != ConsoleKey.Enter &&
+                         key.Key != ConsoleKey.RightArrow &&
                          key.Key != ConsoleKey.LeftArrow);
-
+                
                 if (key.Key == ConsoleKey.RightArrow)
                 {
                     SaveAndExit();
                     gameEnded = true;
                 }
-
+                
                 if (key.Key == ConsoleKey.LeftArrow)
                 {
                     ExitWithoutSaving();
@@ -112,8 +113,9 @@ public class GameController
                 else
                 {
                     var isValidMove = false;
+                    var takeACardOption = _currentPlayerHand.Count;
                     
-                    if (_gameEngine.GameState.SelectedCardIndex == _currentPlayerHand.Count)
+                    if (_gameEngine.GameState.SelectedCardIndex == takeACardOption)
                     {
                         PlayerTakeCardFromDeck();
                         isValidMove = true;
@@ -234,11 +236,11 @@ public class GameController
         {
             case 1:
                 JsonRepository.SaveIntoJson(_gameEngine);
-                Menu.Menu.RunMenu(() => GameSetup.NewGame(gameEngine), () => GameSetup.LoadGameJson(gameEngine));
+                Menu.Menu.Run(() => GameSetup.NewGame(gameEngine), () => GameSetup.LoadGameJson(gameEngine));
                 break;
             case 2:
                 DbRepository.SaveIntoDb(_gameEngine);
-                Menu.Menu.RunMenu(() => GameSetup.NewGame(gameEngine), () => GameSetup.LoadGameDb(gameEngine));
+                Menu.Menu.Run(() => GameSetup.NewGame(gameEngine), () => GameSetup.LoadGameDb(gameEngine));
                 break;
         }
 
@@ -246,20 +248,7 @@ public class GameController
     
     private static void ExitWithoutSaving()
     {
-        var gameEngine = new GameEngine();
-
-        GameConfiguration.PromptForRepositoryType(gameEngine);
-
-        switch (gameEngine.GameState.RepositoryChoice)
-        {
-            case 1:
-                Menu.Menu.RunMenu(() => GameSetup.NewGame(gameEngine), () => GameSetup.LoadGameJson(gameEngine));
-                break;
-            case 2:
-                Menu.Menu.RunMenu(() => GameSetup.NewGame(gameEngine), () => GameSetup.LoadGameDb(gameEngine));
-                break;
-        }
-
+        GameConfiguration.Start();
     }
     
 }

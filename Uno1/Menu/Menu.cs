@@ -2,7 +2,7 @@
 
 public static class Menu
 {
-    public static void RunMenu(Action newGameMethod, Action loadGameMethod)
+    public static void Run(Action newGameMethod, Action loadGameMethod)
     {
         string[] menuOptions = { "Start a new game", "Load game", "Exit" };
         var selectedIndex = 0;
