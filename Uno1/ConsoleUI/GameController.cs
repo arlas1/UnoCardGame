@@ -183,7 +183,7 @@ public class GameController
     {
         if (selectedCard.CardValue != UnoCard.Value.Wild)
         {
-            _gameEngine.SubmitPlayerCard(selectedCard, _currentPlayerId);
+            _gameEngine.SubmitPlayerCard(_currentPlayerId, selectedCard);
         }
         else
         {
@@ -200,7 +200,7 @@ public class GameController
     {
         if (selectedCard.CardValue != UnoCard.Value.Wild)
         {
-            _gameEngine.SubmitPlayerCard(selectedCard, _currentPlayerId);
+            _gameEngine.SubmitPlayerCard(_currentPlayerId, selectedCard);
         }
         else
         {

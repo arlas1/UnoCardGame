@@ -2,14 +2,14 @@
 
 namespace Tests.TestUtils;
 
-public static class SamplePlayer
+public static class PlayerUtils
 {
-    public static Player GetHumanType(int id, string name)
+    public static Player CreateHumanType(int id, string name)
     {
         return new Player(id, name, Player.PlayerType.Human);
     }
     
-    public static Player GetAiType(int id, string name)
+    public static Player CreateAiType(int id, string name)
     {
         return new Player(id, name, Player.PlayerType.Human);
     }

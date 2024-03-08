@@ -21,6 +21,18 @@ public class UnoCard
     {
         return $"{CardColor}_{CardValue}";
     }
+    
+    public override bool Equals(object? obj)
+    {
+        if (obj == null || GetType() != obj.GetType())
+        {
+            return false;
+        }
+
+        UnoCard otherCard = (UnoCard)obj;
+        return CardColor == otherCard.CardColor && CardValue == otherCard.CardValue;
+    }
+
 
     public enum Color
     {

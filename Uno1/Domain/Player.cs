@@ -20,4 +20,18 @@ public class Player
         Human,
         Ai
     }
+    
+    public override bool Equals(object? obj)
+    {
+        if (obj == null || GetType() != obj.GetType())
+        {
+            return false;
+        }
+
+        Player otherPlayer = (Player)obj;
+        return Id == otherPlayer.Id &&
+               Name == otherPlayer.Name &&
+               Type == otherPlayer.Type &&
+               Hand.SequenceEqual(otherPlayer.Hand);
+    }
 }

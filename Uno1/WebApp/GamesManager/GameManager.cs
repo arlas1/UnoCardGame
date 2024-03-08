@@ -484,7 +484,7 @@ public class GameManager(AppDbContext context)
         context.Hands.Remove(cardToRemove!);
         await context.SaveChangesAsync();
 
-        gameEngine.SubmitPlayerCard(card, currentPlayerIndex);
+        gameEngine.SubmitPlayerCard(currentPlayerIndex, card);
         gameEngine.GameState.StockPile.Add(card);
 
         gameEngine.GetNextPlayerId(currentPlayerIndex);
@@ -622,7 +622,7 @@ public class GameManager(AppDbContext context)
             context.Hands.Remove(cardToRemove!);
             await context.SaveChangesAsync();
 
-            gameEngine.SubmitPlayerCard(selectedCard, gameState.CurrentPlayerIndex);
+            gameEngine.SubmitPlayerCard(gameState.CurrentPlayerIndex, selectedCard);
             gameEngine.GameState.StockPile.Add(selectedCard);
             if (gameState.IsColorChosen == 1 && selectedCard.CardValue != UnoCard.Value.Wild)
             {

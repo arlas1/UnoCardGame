@@ -72,20 +72,20 @@ public class GameEngine
                 card.CardColor == UnoCard.Color.Wild);
     }
     
-    public void GetNextPlayerId(int playerId)
+    public void GetNextPlayerId(int currentPlayerId)
     {
         if (GameState.StockPile.Last().CardValue == UnoCard.Value.Skip)
         {
             if (!GameState.GameDirection)
             {
                 // Move forward if skip
-                GameState.CurrentPlayerIndex = (playerId + 2) % GameState.PlayersList.Count;
+                GameState.CurrentPlayerIndex = (currentPlayerId + 2) % GameState.PlayersList.Count;
 
             }
             else
             {
                 // Move backward if skip
-                GameState.CurrentPlayerIndex = (playerId - 2 + GameState.PlayersList.Count) % GameState.PlayersList.Count;
+                GameState.CurrentPlayerIndex = (currentPlayerId - 2 + GameState.PlayersList.Count) % GameState.PlayersList.Count;
             }
         }
         else
@@ -93,17 +93,17 @@ public class GameEngine
             if (!GameState.GameDirection)
             {
                 // Move forward
-                GameState.CurrentPlayerIndex = (playerId + 1) % GameState.PlayersList.Count;
+                GameState.CurrentPlayerIndex = (currentPlayerId + 1) % GameState.PlayersList.Count;
             }
             else
             {
                 // Move backward
-                GameState.CurrentPlayerIndex = (playerId - 1 + GameState.PlayersList.Count) % GameState.PlayersList.Count;
+                GameState.CurrentPlayerIndex = (currentPlayerId - 1 + GameState.PlayersList.Count) % GameState.PlayersList.Count;
             }
         }
     }
     
-    public void SubmitPlayerCard(UnoCard card, int playerId)
+    public void SubmitPlayerCard(int playerId,UnoCard card)
     {
         if (card.CardValue == UnoCard.Value.Reverse)
         {

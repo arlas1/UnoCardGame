@@ -1,21 +1,15 @@
-﻿namespace Menu;
+﻿namespace Tests.TestUtils;
 
-public static class Menu
+public static class MenuUtils
 {
-    public static void Run(Action newGameMethod, Action loadGameMethod)
+    public static void SimulateMenuInteraction(Action newGameMethod, Action loadGameMethod)
     {
         string[] menuOptions = { "Start a new game", "Load game", "Exit" };
         var selectedIndex = 0;
-
-        ConsoleKeyInfo key;
+        string? userInput;
 
         do
         {
-            if (Environment.UserInteractive)
-            {
-                Console.Clear();
-            }
-            
             Console.WriteLine(">>  Welcome to UNO!  <<");
             Console.WriteLine("=======================");
 
@@ -23,35 +17,31 @@ public static class Menu
             {
                 if (i == selectedIndex)
                 {
-                    Console.BackgroundColor = ConsoleColor.Gray;
-                    Console.ForegroundColor = ConsoleColor.Black;
+                    Console.Write("> ");
+                }
+                else
+                {
+                    Console.Write("  ");
                 }
 
-                Console.WriteLine($"{i + 1}. {menuOptions[i]}");
-
-                Console.ResetColor();
+                Console.WriteLine($"{menuOptions[i]}");
             }
-            
             Console.WriteLine("=======================");
 
-            key = Console.ReadKey();
-
-            switch (key.Key)
+            userInput = Console.ReadLine();
+            switch (userInput)
             {
-                case ConsoleKey.UpArrow:
+                case "up":
                     selectedIndex = (selectedIndex - 1 + menuOptions.Length) % menuOptions.Length;
                     break;
-                case ConsoleKey.DownArrow:
+                case "down":
                     selectedIndex = (selectedIndex + 1) % menuOptions.Length;
                     break;
+                case "enter":
+                    break; 
             }
         }
-        while (key.Key != ConsoleKey.Enter);
-
-        if (Environment.UserInteractive)
-        {
-            Console.Clear();
-        }
+        while (userInput != "enter");
 
         switch (selectedIndex)
         {
@@ -65,5 +55,12 @@ public static class Menu
                 Console.WriteLine("Have a good day!");
                 break;
         }
+    }
+
+    public static StringWriter RedirectConsoleOutputToStringWriter()
+    {
+        var writer = new StringWriter();
+        Console.SetOut(writer);
+        return writer;
     }
 }
