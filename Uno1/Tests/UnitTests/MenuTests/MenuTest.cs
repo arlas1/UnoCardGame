@@ -7,7 +7,7 @@ namespace Tests.UnitTests.MenuTests;
 public class MenuTest
 {
     [Fact]
-    public void MenuSimulation_SelectOptionNewGame_NewGameMethodCalled()
+    public void MenuSimulation_RunAndSelectOptionNewGame_NewGameMethodCalled()
     {
         // Arrange
         var newGameMethodCalled = false;
@@ -20,7 +20,7 @@ public class MenuTest
         using (StringReader input = new StringReader("enter\n"))
         {
             Console.SetIn(input);
-            MenuUtils.SimulateMenuInteraction(newGameMethod, loadGameMethod);
+            MenuUtils.MenuSimulationRun(newGameMethod, loadGameMethod);
         }
 
         // Assert
@@ -28,7 +28,7 @@ public class MenuTest
     }
 
     [Fact]
-    public void MenuSimulation_SelectOptionLoadGame_LoadGameMethodCalled()
+    public void MenuSimulation_RunAndSelectOptionLoadGame_LoadGameMethodCalled()
     {
         // Arrange
         var loadGameMethodCalled = false;
@@ -42,7 +42,7 @@ public class MenuTest
         using (StringReader input = new StringReader("down\nenter\n"))
         {
             Console.SetIn(input);
-            MenuUtils.SimulateMenuInteraction(newGameMethod, loadGameMethod);
+            MenuUtils.MenuSimulationRun(newGameMethod, loadGameMethod);
         }
 
         // Assert
@@ -50,7 +50,7 @@ public class MenuTest
     }
 
     [Fact]
-    public void MenuSimulation_SelectOptionExit_ExitMessageDisplayed()
+    public void MenuSimulation_RunAndSelectOptionExit_ExitMessageDisplayed()
     {
         // Arrange
         Action newGameMethod = () => { };
@@ -63,7 +63,7 @@ public class MenuTest
         using (StringReader input = new StringReader("down\ndown\nenter"))
         {
             Console.SetIn(input);
-            MenuUtils.SimulateMenuInteraction(newGameMethod, loadGameMethod);
+            MenuUtils.MenuSimulationRun(newGameMethod, loadGameMethod);
         }
 
         // Assert

@@ -2,7 +2,7 @@
 
 public static class MenuUtils
 {
-    public static void SimulateMenuInteraction(Action newGameMethod, Action loadGameMethod)
+    public static void MenuSimulationRun(Action newGameMethod, Action loadGameMethod)
     {
         string[] menuOptions = { "Start a new game", "Load game", "Exit" };
         var selectedIndex = 0;

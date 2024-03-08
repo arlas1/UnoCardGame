@@ -105,36 +105,40 @@ public class GameEngine
     
     public void SubmitPlayerCard(int playerId,UnoCard card)
     {
-        if (card.CardValue == UnoCard.Value.Reverse)
+        switch (card.CardValue)
         {
-            GameState.GameDirection = !GameState.GameDirection;
-        }
-
-        if (card.CardValue == UnoCard.Value.DrawTwo)
-        {
-            var nextPlayerId = (playerId + 1) % GameState.PlayersList.Count;
-
-            if (!GameState.GameDirection)
+            case UnoCard.Value.Reverse:
+                GameState.GameDirection = !GameState.GameDirection;
+                break;
+            case UnoCard.Value.DrawTwo:
             {
-                DrawTwoCards(nextPlayerId);
+                var nextPlayerId = (playerId + 1) % GameState.PlayersList.Count;
+
+                if (!GameState.GameDirection)
+                {
+                    DrawTwoCards(nextPlayerId);
+                }
+                else
+                {
+                    DrawTwoCards((playerId - 1 + GameState.PlayersList.Count) % GameState.PlayersList.Count);
+                }
+                
+                break;
             }
-            else
+            case UnoCard.Value.WildFour:
             {
-                DrawTwoCards((playerId - 1 + GameState.PlayersList.Count) % GameState.PlayersList.Count);
-            }
-        }
+                var nextPlayerId = (playerId + 1) % GameState.PlayersList.Count;
 
-        if (card is { CardColor: UnoCard.Color.Wild, CardValue: UnoCard.Value.WildFour })
-        {
-            var nextPlayerId = (playerId + 1) % GameState.PlayersList.Count;
-
-            if (!GameState.GameDirection)
-            {
-                DrawFourCards(nextPlayerId);
-            }
-            else
-            {
-                DrawFourCards((playerId - 1 + GameState.PlayersList.Count) % GameState.PlayersList.Count);
+                if (!GameState.GameDirection)
+                {
+                    DrawFourCards(nextPlayerId);
+                }
+                else
+                {
+                    DrawFourCards((playerId - 1 + GameState.PlayersList.Count) % GameState.PlayersList.Count);
+                }
+                
+                break;
             }
         }
     }
