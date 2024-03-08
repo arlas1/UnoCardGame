@@ -19,6 +19,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnoGameEngine", "UnoGameEng
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApp", "WebApp\WebApp.csproj", "{D301D156-AAE4-4212-9119-75703C84C8EF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests", "Tests\Tests.csproj", "{DF1EE758-C274-41D6-BAF2-9E1DCE292692}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -53,5 +55,9 @@ Global
 		{D301D156-AAE4-4212-9119-75703C84C8EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D301D156-AAE4-4212-9119-75703C84C8EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D301D156-AAE4-4212-9119-75703C84C8EF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DF1EE758-C274-41D6-BAF2-9E1DCE292692}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF1EE758-C274-41D6-BAF2-9E1DCE292692}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DF1EE758-C274-41D6-BAF2-9E1DCE292692}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DF1EE758-C274-41D6-BAF2-9E1DCE292692}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

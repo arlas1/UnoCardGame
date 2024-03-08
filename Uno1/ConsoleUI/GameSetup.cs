@@ -8,13 +8,13 @@ public class GameSetup
 {
     public static void NewGame(GameEngine gameEngine)
     {
-        gameEngine.DeleteCardWithValueToAvoid(GameConfiguration.PromptForCardValueToAvoid());
+        var cardValueToAvoid = GameConfiguration.PromptForCardValueToAvoid();
+        gameEngine.DeleteCardsWithValueToAvoid(cardValueToAvoid);
         
         var numPlayers = GameConfiguration.PromptForNumberOfPlayers();
-        gameEngine.GameState.PlayersMaxAmount = numPlayers;
+        gameEngine.GameState.MaxPlayersAmount = numPlayers;
 
         GameConfiguration.CreatePlayers(numPlayers, gameEngine);
-
         gameEngine.CheckFirstCardInGame();
         
         var gameController = new GameController(gameEngine);

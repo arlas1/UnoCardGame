@@ -7,7 +7,7 @@ public class Player
     public PlayerType Type { get; set; }
     public List<UnoCard> Hand { get; set; }
 
-    public Player( int id, string? name, PlayerType type)
+    public Player(int id, string? name, PlayerType type)
     {
         Id = id;
         Name = name;

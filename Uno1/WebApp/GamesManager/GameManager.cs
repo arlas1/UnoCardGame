@@ -18,14 +18,14 @@ public class GameManager(AppDbContext context)
         {
             GameState =
             {
-                CardsMaxAmount = cardsMaxInHand,
-                PlayersMaxAmount = playersMaxAmount,
+                MaxCardsAmount = cardsMaxInHand,
+                MaxPlayersAmount = playersMaxAmount,
                 IsGameStarted = 0,
                 IsGameEnded = 0
             }
         };
 
-        gameEngine.DeleteCardWithValueToAvoid(cardValueToAvoid);
+        gameEngine.DeleteCardsWithValueToAvoid(cardValueToAvoid);
 
         var player = new Player(0, nickname, Player.PlayerType.Human)
         {
@@ -44,8 +44,8 @@ public class GameManager(AppDbContext context)
             IsColorChosen = 0,
             SelectedCardIndex = -1,
             CardColorChoice = 4, // 4 is default!, 0,1,2,3 - colors
-            MaxCardAmount = gameEngine.GameState.CardsMaxAmount,
-            PlayersMaxAmount = gameEngine.GameState.PlayersMaxAmount,
+            MaxCardAmount = gameEngine.GameState.MaxCardsAmount,
+            PlayersMaxAmount = gameEngine.GameState.MaxPlayersAmount,
             IsGameStarted = 0,
             IsGameEnded = 0
         };
@@ -261,6 +261,7 @@ public class GameManager(AppDbContext context)
                 StockPile = []
             }
         };
+        
         var unoDeck = context.UnoDecks.Where(card => card.GameStateId == gameId);
         if (!unoDeck.Any())
         {
@@ -374,6 +375,29 @@ public class GameManager(AppDbContext context)
         }
 
         return result;
+    }
+    
+    public async Task<(bool hasWinner, int playerId)> CheckForWinner(int gameId, int playerId)
+    {
+        var gameState = context.GameStates.SingleOrDefault(gs => gs.Id == gameId);
+
+        if (gameState!.IsGameEnded == 1)
+        {
+            return (true, gameState.WinnerId);
+        }
+
+        var playerHandCount = await context.Hands.CountAsync(hand =>
+            hand.GameStateId == gameId && hand.PlayerId == playerId);
+
+        if (playerHandCount == 0)
+        {
+            gameState.IsGameEnded = 1;
+            gameState.WinnerId = playerId;
+            await context.SaveChangesAsync();
+            return (true, playerId);
+        }
+
+        return (false, playerId);
     }
 
     public async Task PlayCardHuman(int gameId, int playerId, UnoCard card)
@@ -496,30 +520,6 @@ public class GameManager(AppDbContext context)
         {
             await PlayCardAi(gameId, currentPlayer.Id);
         }
-    }
-
-    public async Task<(bool hasWinner, int playerId)> CheckForWinner(int gameId, int playerId)
-    {
-        var gameState = context.GameStates.SingleOrDefault(gs => gs.Id == gameId);
-
-        if (gameState!.IsGameEnded == 1)
-        {
-            return (true, gameState.WinnerId);
-
-        }
-
-        var playerHandCount = await context.Hands.CountAsync(hand =>
-            hand.GameStateId == gameId && hand.PlayerId == playerId);
-
-        if (playerHandCount == 0)
-        {
-            gameState.IsGameEnded = 1;
-            gameState.WinnerId = playerId;
-            await context.SaveChangesAsync();
-            return (true, playerId);
-        }
-
-        return (false, playerId);
     }
 
     private async Task PlayCardAi(int gameId, int playerId)
@@ -664,8 +664,7 @@ public class GameManager(AppDbContext context)
             }
 
             await CheckForWinner(gameId, playerId);
-
-
+            
             await context.SaveChangesAsync();
 
             // Continue with the next AI player if applicable
@@ -713,5 +712,6 @@ public class GameManager(AppDbContext context)
             }
         }
     }
+    
 }
 

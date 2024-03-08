@@ -12,7 +12,7 @@ public class GameEngine
         GameState.UnoDeck.Shuffle();
     }
 
-    public void DeleteCardWithValueToAvoid(UnoCard.Value? valueToAvoid)
+    public void DeleteCardsWithValueToAvoid(UnoCard.Value? valueToAvoid)
     {
         GameState.UnoDeck.RemoveCardsWithValue(valueToAvoid);
     }
@@ -20,7 +20,7 @@ public class GameEngine
     public List<UnoCard> GetOneHand()
     {
         List<UnoCard> listOfCards = new();
-        for (var j = 0; j < GameState.CardsMaxAmount; j++)
+        for (var j = 0; j < GameState.MaxCardsAmount; j++)
         {
             var drawnCard = GameState.UnoDeck.DrawCard();
             listOfCards.Add(drawnCard);

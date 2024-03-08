@@ -123,7 +123,6 @@ public static class GameConfiguration
     public static void CreatePlayers(int numPlayers, GameEngine gameEngine)
     {
         var players = new List<Player>();
-        
         var cardsPerPlayer = PromptForInitialCardsAmountPerPlayer();
 
         for (var i = 0; i < numPlayers; i++)
@@ -163,7 +162,6 @@ public static class GameConfiguration
     public static void PromptForWildCardColorHuman(GameEngine gameEngine)
     {
         var selectedIndex = 0;
-    
         ConsoleKeyInfo key;
     
         do
@@ -206,12 +204,16 @@ public static class GameConfiguration
     public static UnoCard.Value PromptForCardValueToAvoid()
     {
         Console.Clear();
-        Console.WriteLine("Choose which card value to avoid:");
-
-        var options = new List<UnoCard.Value> { UnoCard.Value.Reverse, UnoCard.Value.Skip, UnoCard.Value.DrawTwo, UnoCard.Value.WildFour, UnoCard.Value.Wild };
+        var options = new List<UnoCard.Value> 
+        { 
+            UnoCard.Value.Reverse,
+            UnoCard.Value.Skip,
+            UnoCard.Value.DrawTwo,
+            UnoCard.Value.WildFour,
+            UnoCard.Value.Wild
+        };
 
         var selectedIndex = 0;
-
         ConsoleKeyInfo key;
 
         do
@@ -228,7 +230,6 @@ public static class GameConfiguration
                 }
 
                 Console.WriteLine($"{i + 1}. {options[i]}");
-
                 Console.ResetColor();
             }
 

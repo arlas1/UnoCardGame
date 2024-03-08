@@ -1,13 +1,11 @@
 using DAL;
 using Microsoft.EntityFrameworkCore;
 
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("-udl") ??
                        throw new InvalidOperationException("Connection string '-udl' not found.");
-
 
 connectionString = connectionString.Replace("<%temppath%>", Path.GetTempPath());
 
@@ -38,7 +36,6 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthorization();
-
 
 app.MapRazorPages();
 

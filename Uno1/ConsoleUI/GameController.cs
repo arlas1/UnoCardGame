@@ -23,7 +23,7 @@ public class GameController
         
         while (!gameEnded)
         {
-            UpdateGameControllerData();
+            UpdateCurrentPlayerData();
             
             if (_currentPlayer.Type == Player.PlayerType.Ai)
             {
@@ -151,7 +151,7 @@ public class GameController
         }
     }
     
-    private void UpdateGameControllerData()
+    private void UpdateCurrentPlayerData()
     {
         _currentPlayerHand = _gameEngine.GameState.PlayersList[_gameEngine.GameState.CurrentPlayerIndex].Hand;
         _currentPlayer = _gameEngine.GameState.PlayersList[_gameEngine.GameState.CurrentPlayerIndex];

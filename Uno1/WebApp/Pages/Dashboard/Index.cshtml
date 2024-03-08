@@ -52,7 +52,7 @@
                     @Html.DisplayFor(modelItem => gameState.PlayersList[0].Name)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => gameState.PlayersMaxAmount)
+                    @Html.DisplayFor(modelItem => gameState.MaxPlayersAmount)
                 </td>
                 <td>
                     @foreach (var player in gameState.PlayersList)
@@ -85,11 +85,11 @@
                 </td>
                 <td id="@($"placesLeft_{gameId}")">
                     <script>
-                        const placesLeft = parseInt("@gameState.PlayersMaxAmount") - @gameState.PlayersList.Count;
+                        const placesLeft = parseInt("@gameState.MaxPlayersAmount") - @gameState.PlayersList.Count;
                         document.getElementById("@($"placesLeft_{gameId}")").innerText = placesLeft;
                     </script>
                 </td>
-                @if (gameState.PlayersMaxAmount - gameState.PlayersList.Count != 0 && gameState.IsGameStarted == 0)
+                @if (gameState.MaxPlayersAmount - gameState.PlayersList.Count != 0 && gameState.IsGameStarted == 0)
                 {
                     <td>
                         <form method="post" asp-page="/GameWait/Index">

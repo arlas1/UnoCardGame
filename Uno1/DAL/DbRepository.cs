@@ -29,7 +29,7 @@ public static class DbRepository
             CurrentPlayerIndex = gameEngine.GameState.CurrentPlayerIndex,
             IsColorChosen = gameEngine.GameState.IsColorChosen ? 1 : 0,
             SelectedCardIndex = gameEngine.GameState.SelectedCardIndex,
-            PlayersMaxAmount = gameEngine.GameState.PlayersMaxAmount,
+            PlayersMaxAmount = gameEngine.GameState.MaxPlayersAmount,
             IsGameStarted = gameEngine.GameState.IsGameStarted,
             ConsoleSaved = 1
             
