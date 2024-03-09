@@ -79,12 +79,4 @@ public static class GameEngineUtils
             gameEngine.GameState.PlayersList.Add(PlayerUtils.CreateHumanType(i,"p" + i));
         }
     }
-    
-    // public static void LoadAmountOfAiPlayers(int amount, GameEngine gameEngine)
-    // {
-    //     for (int i = 0; i < amount; i++)
-    //     {
-    //         gameEngine.GameState.PlayersList.Add(SamplePlayer.CreateAiType(0,"p" + i));
-    //     }
-    // }
 }
