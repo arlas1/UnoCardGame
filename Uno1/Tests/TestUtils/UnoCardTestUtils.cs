@@ -2,7 +2,7 @@
 
 namespace Tests.TestUtils;
 
-public static class UnoCardUtils
+public static class UnoCardTestUtils
 {
     public static List<UnoCard.Value> GetAllPossibleValuesToAvoid()
     {

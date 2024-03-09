@@ -3,7 +3,7 @@ using UnoGameEngine;
 
 namespace Tests.TestUtils;
 
-public static class GameEngineUtils
+public static class GameEngineTestUtils
 {
     public static GameEngine CreateWithColorChoice(UnoCard.Color color)
     {
@@ -76,7 +76,7 @@ public static class GameEngineUtils
     {
         for (int i = 0; i < amount; i++)
         {
-            gameEngine.GameState.PlayersList.Add(PlayerUtils.CreateHumanType(i,"p" + i));
+            gameEngine.GameState.PlayersList.Add(PlayerTestUtils.CreatePlayerHuman(i,"p" + i));
         }
     }
 }

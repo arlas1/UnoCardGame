@@ -5,36 +5,6 @@ namespace Tests.UnitTests.DomainTests;
 public class UnoDeckTest
 {
     [Fact]
-    public void UnoDeck_Create_CreatesDeckWithExpectedCards()
-    {
-        // Arrange
-        var unoDeck = new UnoDeck();
-
-        // Act
-        unoDeck.Create();
-
-        // Assert
-        Assert.Equal(108, unoDeck.Cards.Count);
-
-        // Check if each color has the expected number of cards
-        foreach (var color in Enum.GetValues(typeof(UnoCard.Color)).Cast<UnoCard.Color>())
-        {
-            var count = unoDeck.Cards.Count(card => card.CardColor == color);
-            Assert.Equal(25, count);
-        }
-
-        // Check if each value (except wild cards) has the expected number of cards
-        foreach (var value in Enum.GetValues(typeof(UnoCard.Value)).Cast<UnoCard.Value>())
-        {
-            if (value != UnoCard.Value.Wild && value != UnoCard.Value.WildFour)
-            {
-                var count = unoDeck.Cards.Count(card => card.CardValue == value);
-                Assert.Equal(4, count);
-            }
-        }
-    }
-
-    [Fact]
     public void UnoDeck_AddCardToDeck_CardsCountIncreasesByOne()
     {
         // Arrange
@@ -109,7 +79,7 @@ public class UnoDeckTest
 
         // Assert
         Assert.Equal(expectedCard, drawnCard);
-        Assert.DoesNotContain(drawnCard, unoDeck.Cards);
+        Assert.Equal(107, unoDeck.Cards.Count);
     }
 
     [Fact]

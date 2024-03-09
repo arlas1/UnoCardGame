@@ -14,13 +14,13 @@ public class MenuTest
         Action newGameMethod = () => newGameMethodCalled = true;
         Action loadGameMethod = () => { };
 
-        MenuUtils.RedirectConsoleOutputToStringWriter();
+        MenuTestUtils.RedirectConsoleOutputToStringWriter();
         
         // Act
         using (StringReader input = new StringReader("enter\n"))
         {
             Console.SetIn(input);
-            MenuUtils.MenuSimulationRun(newGameMethod, loadGameMethod);
+            MenuTestUtils.MenuSimulationRun(newGameMethod, loadGameMethod);
         }
 
         // Assert
@@ -35,14 +35,14 @@ public class MenuTest
         Action newGameMethod = () => { };
         Action loadGameMethod = () => loadGameMethodCalled = true;
 
-        MenuUtils.RedirectConsoleOutputToStringWriter();
+        MenuTestUtils.RedirectConsoleOutputToStringWriter();
 
 
         // Act
         using (StringReader input = new StringReader("down\nenter\n"))
         {
             Console.SetIn(input);
-            MenuUtils.MenuSimulationRun(newGameMethod, loadGameMethod);
+            MenuTestUtils.MenuSimulationRun(newGameMethod, loadGameMethod);
         }
 
         // Assert
@@ -57,13 +57,13 @@ public class MenuTest
         Action loadGameMethod = () => { };
         var expectedOutput = "Have a good day!";
 
-        var writer = MenuUtils.RedirectConsoleOutputToStringWriter();
+        var writer = MenuTestUtils.RedirectConsoleOutputToStringWriter();
 
         // Act
         using (StringReader input = new StringReader("down\ndown\nenter"))
         {
             Console.SetIn(input);
-            MenuUtils.MenuSimulationRun(newGameMethod, loadGameMethod);
+            MenuTestUtils.MenuSimulationRun(newGameMethod, loadGameMethod);
         }
 
         // Assert

@@ -10,15 +10,25 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="AWSSDK.S3" Version="3.7.305.31" />
+        <PackageReference Include="FluentAssert" Version="1.0.0.11" />
         <PackageReference Include="FluentAssertions" Version="6.12.0" />
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.6.0"/>
+        <PackageReference Include="FluentAssertions.Analyzers" Version="0.31.0">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="FluentAssertions.Json" Version="6.1.0" />
+        <PackageReference Include="FluentAsserts" Version="1.0.0" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="8.0.2" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.9.0" />
         <PackageReference Include="Moq" Version="4.20.70" />
-        <PackageReference Include="xunit" Version="2.4.2"/>
-        <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
+        <PackageReference Include="System.IO.Packaging" Version="8.0.0" />
+        <PackageReference Include="xunit" Version="2.7.0" />
+        <PackageReference Include="xunit.runner.visualstudio" Version="2.5.7">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>
-        <PackageReference Include="coverlet.collector" Version="6.0.0">
+        <PackageReference Include="coverlet.collector" Version="6.0.1">
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>
@@ -32,12 +42,6 @@
       <ProjectReference Include="..\Menu\Menu.csproj" />
       <ProjectReference Include="..\UnoGameEngine\UnoGameEngine.csproj" />
       <ProjectReference Include="..\WebApp\WebApp.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="UnitTests\ConsoleAppTests\" />
-      <Folder Include="UnitTests\ConsoleUITests\" />
-      <Folder Include="UnitTests\DALTests\" />
     </ItemGroup>
 
 </Project>

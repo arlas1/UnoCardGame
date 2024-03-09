@@ -73,7 +73,7 @@ public static class DbRepository
                 GameStateId = gameStateEntity.Id
             };
 
-            context.StockPiles.Add(stockPileEntity);
+            context.StockPile.Add(stockPileEntity);
         }
 
         foreach (var card in gameEngine.GameState.UnoDeck.SerializedCards)
@@ -85,7 +85,7 @@ public static class DbRepository
                 GameStateId = gameStateEntity.Id
             };
 
-            context.UnoDecks.Add(unoDeckEntity);
+            context.UnoDeck.Add(unoDeckEntity);
         }
 
         context.SaveChanges();
@@ -122,7 +122,7 @@ public static class DbRepository
             }
             
             // Retrieve stockpile cards
-            var stockPileCards = context.StockPiles
+            var stockPileCards = context.StockPile
                 .Where(s => s.GameStateId == gameStateEntity.Id)
                 .Select(s => new UnoCard((UnoCard.Color)s.CardColor, (UnoCard.Value)s.CardValue))
                 .ToList();
@@ -131,7 +131,7 @@ public static class DbRepository
             gameEngine.GameState.StockPile.AddRange(stockPileCards);
             
             // Retrieve deck cards
-            var unoDeckCards = context.UnoDecks
+            var unoDeckCards = context.UnoDeck
                 .Where(u => u.GameStateId == gameStateEntity.Id)
                 .Select(u => new UnoCard((UnoCard.Color)u.CardColor, (UnoCard.Value)u.CardValue))
                 .ToList();

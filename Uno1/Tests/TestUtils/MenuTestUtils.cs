@@ -1,6 +1,6 @@
 ﻿namespace Tests.TestUtils;
 
-public static class MenuUtils
+public static class MenuTestUtils
 {
     public static void MenuSimulationRun(Action newGameMethod, Action loadGameMethod)
     {

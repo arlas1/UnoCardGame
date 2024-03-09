@@ -39,7 +39,7 @@ public class GameEngineTest
         sampleGameEngine.DeleteCardsWithValueToAvoid(UnoCard.Value.WildFour);
         
         // Assert
-        var noWildFourCardsLeft = GameEngineUtils.NoCardsWithValue(sampleGameEngine, UnoCard.Value.WildFour);
+        var noWildFourCardsLeft = GameEngineTestUtils.NoCardsWithValue(sampleGameEngine, UnoCard.Value.WildFour);
         Assert.True(noWildFourCardsLeft);
     }
 
@@ -67,7 +67,7 @@ public class GameEngineTest
     public void GameEngine_CheckFirstCardInGameWhenDeckHave5LastCardsToAvoid_AfterInDeckRemained102Cards()
     {
         // Arrange
-        var sampleGameEngine = GameEngineUtils.CreateWithUnoDeckWith5LastCardsToAvoid();
+        var sampleGameEngine = GameEngineTestUtils.CreateWithUnoDeckWith5LastCardsToAvoid();
 
         // Act
         sampleGameEngine.CheckFirstCardInGame();
@@ -80,7 +80,7 @@ public class GameEngineTest
     public void GameEngine_CheckFirstCardInGameWhenDeckHave5LastCardsToAvoid_AfterFirstStockPileCardIsRedZero()
     {
         // Arrange
-        var sampleGameEngine = GameEngineUtils.CreateWithUnoDeckWith5LastCardsToAvoid();
+        var sampleGameEngine = GameEngineTestUtils.CreateWithUnoDeckWith5LastCardsToAvoid();
 
         // Act
         sampleGameEngine.CheckFirstCardInGame();
@@ -127,7 +127,7 @@ public class GameEngineTest
     public void GameEngine_IsValidCardPlayWhenWildCardColorWasSetRed_CardWithSetColorCanBePlacedOnTopOfWildCard()
     {
         // Arrange
-        var sampleGameEngine = GameEngineUtils.CreateWithColorChoice(UnoCard.Color.Red);
+        var sampleGameEngine = GameEngineTestUtils.CreateWithColorChoice(UnoCard.Color.Red);
         sampleGameEngine.GameState.StockPile.Add(new UnoCard(UnoCard.Color.Wild, UnoCard.Value.Wild));
 
         // Act
@@ -141,7 +141,7 @@ public class GameEngineTest
     public void GameEngine_IsValidCardPlayWhenWildCardColorWasSet_CardWithDifferentColorOtherThanChosenCantBePlacedOnTopOfWildCard()
     {
         // Arrange
-        var sampleGameEngine = GameEngineUtils.CreateWithColorChoice(UnoCard.Color.Red);
+        var sampleGameEngine = GameEngineTestUtils.CreateWithColorChoice(UnoCard.Color.Red);
         sampleGameEngine.GameState.StockPile.Add(new UnoCard(UnoCard.Color.Wild, UnoCard.Value.Wild));
 
         // Act
@@ -155,9 +155,9 @@ public class GameEngineTest
     public void GameEngine_GetNextPlayerIdWithNonSkipCardAndClockwiseGameDirection_HappensMoveForward()
     {
         // Arrange
-        var sampleGameEngine = GameEngineUtils.CreateWithRequiredGameDirection(false); // Clockwise
+        var sampleGameEngine = GameEngineTestUtils.CreateWithRequiredGameDirection(false); // Clockwise
         sampleGameEngine.GameState.StockPile.Add(new UnoCard(UnoCard.Color.Red, UnoCard.Value.Zero));
-        GameEngineUtils.LoadAmountOfHumanPlayers(3, sampleGameEngine);
+        GameEngineTestUtils.LoadAmountOfHumanPlayers(3, sampleGameEngine);
 
         // Act
         sampleGameEngine.GetNextPlayerId(0);
@@ -171,9 +171,9 @@ public class GameEngineTest
     public void GameEngine_GetNextPlayerIdWithNonSkipCardAndCounterClockwiseGameDirection_HappensMoveBackward()
     {
         // Arrange
-        var sampleGameEngine = GameEngineUtils.CreateWithRequiredGameDirection(true); // Counter-clockwise
+        var sampleGameEngine = GameEngineTestUtils.CreateWithRequiredGameDirection(true); // Counter-clockwise
         sampleGameEngine.GameState.StockPile.Add(new UnoCard(UnoCard.Color.Red, UnoCard.Value.Zero));
-        GameEngineUtils.LoadAmountOfHumanPlayers(3, sampleGameEngine);
+        GameEngineTestUtils.LoadAmountOfHumanPlayers(3, sampleGameEngine);
 
         // Act
         sampleGameEngine.GetNextPlayerId(0);
@@ -187,9 +187,9 @@ public class GameEngineTest
     public void GameEngine_GetNextPlayerIdWithSkipCardAndClockwiseGameDirection_HappensDoubleMoveForward()
     {
         // Arrange
-        var sampleGameEngine = GameEngineUtils.CreateWithRequiredGameDirection(false); // Clockwise
+        var sampleGameEngine = GameEngineTestUtils.CreateWithRequiredGameDirection(false); // Clockwise
         sampleGameEngine.GameState.StockPile.Add(new UnoCard(UnoCard.Color.Red, UnoCard.Value.Skip));
-        GameEngineUtils.LoadAmountOfHumanPlayers(3, sampleGameEngine);
+        GameEngineTestUtils.LoadAmountOfHumanPlayers(3, sampleGameEngine);
 
         // Act
         sampleGameEngine.GetNextPlayerId(0);
@@ -203,9 +203,9 @@ public class GameEngineTest
     public void GameEngine_GetNextPlayerIdWithSkipCardAndCounterClockwiseGameDirection_HappensDoubleMoveBackward()
     {
         // Arrange
-        var sampleGameEngine = GameEngineUtils.CreateWithRequiredGameDirection(true); // Counter-clockwise
+        var sampleGameEngine = GameEngineTestUtils.CreateWithRequiredGameDirection(true); // Counter-clockwise
         sampleGameEngine.GameState.StockPile.Add(new UnoCard(UnoCard.Color.Red, UnoCard.Value.Skip));
-        GameEngineUtils.LoadAmountOfHumanPlayers(3, sampleGameEngine);
+        GameEngineTestUtils.LoadAmountOfHumanPlayers(3, sampleGameEngine);
 
         // Act
         sampleGameEngine.GetNextPlayerId(0);
@@ -219,7 +219,7 @@ public class GameEngineTest
     public void GameEngine_SubmitPlayerCardReverse_GameDirectionWasReversed()
     {
         // Arrange
-        var sampleGameEngine = GameEngineUtils.CreateWithRequiredGameDirection(false); // Clockwise
+        var sampleGameEngine = GameEngineTestUtils.CreateWithRequiredGameDirection(false); // Clockwise
         
         // Act
         sampleGameEngine.SubmitPlayerCard(0, new UnoCard(UnoCard.Color.Red, UnoCard.Value.Reverse));
@@ -233,8 +233,8 @@ public class GameEngineTest
     public void GameEngine_SubmitPlayerCardDrawTwoWithClockwiseGameDirection_NextForwardPlayerHad0CardsNowHave2()
     {
         // Arrange
-        var sampleGameEngine = GameEngineUtils.CreateWithRequiredGameDirection(false); // Clockwise
-        GameEngineUtils.LoadAmountOfHumanPlayers(3, sampleGameEngine);
+        var sampleGameEngine = GameEngineTestUtils.CreateWithRequiredGameDirection(false); // Clockwise
+        GameEngineTestUtils.LoadAmountOfHumanPlayers(3, sampleGameEngine);
         sampleGameEngine.GameState.StockPile.Add(new UnoCard(UnoCard.Color.Red, UnoCard.Value.Zero));
 
         // Act
@@ -253,8 +253,8 @@ public class GameEngineTest
     public void GameEngine_SubmitPlayerCardDrawTwoWithCounterClockwiseGameDirection_NextBackwardPlayerHad0CardsNowHave2()
     {
         // Arrange
-        var sampleGameEngine = GameEngineUtils.CreateWithRequiredGameDirection(true); // Clockwise
-        GameEngineUtils.LoadAmountOfHumanPlayers(3, sampleGameEngine);
+        var sampleGameEngine = GameEngineTestUtils.CreateWithRequiredGameDirection(true); // Clockwise
+        GameEngineTestUtils.LoadAmountOfHumanPlayers(3, sampleGameEngine);
         sampleGameEngine.GameState.StockPile.Add(new UnoCard(UnoCard.Color.Red, UnoCard.Value.Zero));
         
         // Act
@@ -273,8 +273,8 @@ public class GameEngineTest
     public void GameEngine_SubmitPlayerCardWildFourWithClockwiseGameDirection_NextForwardPlayerHad0CardsNowHave4()
     {
         // Arrange
-        var sampleGameEngine = GameEngineUtils.CreateWithRequiredGameDirection(false); // Clockwise
-        GameEngineUtils.LoadAmountOfHumanPlayers(3, sampleGameEngine);
+        var sampleGameEngine = GameEngineTestUtils.CreateWithRequiredGameDirection(false); // Clockwise
+        GameEngineTestUtils.LoadAmountOfHumanPlayers(3, sampleGameEngine);
         sampleGameEngine.GameState.StockPile.Add(new UnoCard(UnoCard.Color.Red, UnoCard.Value.Zero));
 
         // Act
@@ -293,8 +293,8 @@ public class GameEngineTest
     public void GameEngine_SubmitPlayerCardWildFourWithCounterClockwiseGameDirection_NextBackwardPlayerHad0CardsNowHave4()
     {
         // Arrange
-        var sampleGameEngine = GameEngineUtils.CreateWithRequiredGameDirection(true); // Clockwise
-        GameEngineUtils.LoadAmountOfHumanPlayers(3, sampleGameEngine);
+        var sampleGameEngine = GameEngineTestUtils.CreateWithRequiredGameDirection(true); // Clockwise
+        GameEngineTestUtils.LoadAmountOfHumanPlayers(3, sampleGameEngine);
         sampleGameEngine.GameState.StockPile.Add(new UnoCard(UnoCard.Color.Red, UnoCard.Value.Zero));
         
         // Act
@@ -313,7 +313,7 @@ public class GameEngineTest
     public void GameEngine_GetGameStateCopy_ReturnsCopy()
     {
         // Arrange
-        var sampleGameEngine = GameEngineUtils.CreateWithAllPropertiesSet();
+        var sampleGameEngine = GameEngineTestUtils.CreateWithAllPropertiesSet();
 
         // Act
         var sampleGameEngineCopy = sampleGameEngine.GetGameStateCopy();
