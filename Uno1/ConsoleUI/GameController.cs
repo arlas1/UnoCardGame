@@ -57,45 +57,8 @@ public class GameController
             {
                 ConsoleVisualization.DisplayGameHeader(_gameEngine);
                 ConsoleVisualization.DisplayPlayerHand(_currentPlayerHand, _gameEngine);
-                ConsoleKeyInfo key;
-
-                do
-                {
-                    while (Console.KeyAvailable)
-                    {
-                        Console.ReadKey(true);
-                    }
-
-                    key = Console.ReadKey();
-
-                    // Move between the cards in hand
-                    switch (key.Key)
-                    {
-                        case ConsoleKey.UpArrow:
-                            if (_gameEngine.GameState.SelectedCardIndex == 0)
-                            {
-                                _gameEngine.GameState.SelectedCardIndex = _currentPlayerHand.Count;
-                            }
-                            else
-                            {
-                                _gameEngine.GameState.SelectedCardIndex =
-                                    (_gameEngine.GameState.SelectedCardIndex - 1) % (_currentPlayerHand.Count + 1);
-                            }
-
-                            break;
-                        case ConsoleKey.DownArrow:
-                            _gameEngine.GameState.SelectedCardIndex =
-                                (_gameEngine.GameState.SelectedCardIndex + 1) % (_currentPlayerHand.Count + 1);
-                            break;
-                    }
-
-                    Console.Clear();
-                    ConsoleVisualization.DisplayGameHeader(_gameEngine);
-                    ConsoleVisualization.DisplayPlayerHand(_currentPlayerHand, _gameEngine);
-                    
-                } while (key.Key != ConsoleKey.Enter &&
-                         key.Key != ConsoleKey.RightArrow &&
-                         key.Key != ConsoleKey.LeftArrow);
+                
+                ConsoleKeyInfo key = PlayerChoiceOfCard();
                 
                 if (key.Key == ConsoleKey.RightArrow)
                 {
@@ -177,6 +140,50 @@ public class GameController
     private void PlayerTakeCardFromDeck()
     {
         _currentPlayerHand.Add(_gameEngine.GameState.UnoDeck.DrawCard());
+    }
+
+    private ConsoleKeyInfo PlayerChoiceOfCard()
+    {
+        ConsoleKeyInfo key;
+        do
+        {
+            while (Console.KeyAvailable)
+            {
+                Console.ReadKey(true);
+            }
+
+            key = Console.ReadKey();
+
+            // Move between the cards in hand
+            switch (key.Key)
+            {
+                case ConsoleKey.UpArrow:
+                    if (_gameEngine.GameState.SelectedCardIndex == 0)
+                    {
+                        _gameEngine.GameState.SelectedCardIndex = _currentPlayerHand.Count;
+                    }
+                    else
+                    {
+                        _gameEngine.GameState.SelectedCardIndex =
+                            (_gameEngine.GameState.SelectedCardIndex - 1) % (_currentPlayerHand.Count + 1);
+                    }
+
+                    break;
+                case ConsoleKey.DownArrow:
+                    _gameEngine.GameState.SelectedCardIndex =
+                        (_gameEngine.GameState.SelectedCardIndex + 1) % (_currentPlayerHand.Count + 1);
+                    break;
+            }
+
+            Console.Clear();
+            ConsoleVisualization.DisplayGameHeader(_gameEngine);
+            ConsoleVisualization.DisplayPlayerHand(_currentPlayerHand, _gameEngine);
+                    
+        } while (key.Key != ConsoleKey.Enter &&
+                 key.Key != ConsoleKey.RightArrow &&
+                 key.Key != ConsoleKey.LeftArrow);
+
+        return key;
     }
 
     private void SubmitAiPlayerMove(UnoCard selectedCard)
