@@ -67,7 +67,7 @@ public static class GameEngineTestUtils
         return gameEngine;
     }
     
-    public static bool NoCardsWithValue(GameEngine gameEngine, UnoCard.Value? valueToAvoid)
+    public static bool CheckForCardsWithValue(GameEngine gameEngine, UnoCard.Value? valueToAvoid)
     {
         return gameEngine.GameState.UnoDeck.Cards.All(card => card.CardValue != valueToAvoid);
     }
@@ -76,7 +76,7 @@ public static class GameEngineTestUtils
     {
         for (int i = 0; i < amount; i++)
         {
-            gameEngine.GameState.PlayersList.Add(PlayerTestUtils.CreatePlayerHuman(i,"p" + i));
+            gameEngine.GameState.PlayersList.Add(new Player(i, "p" + i, Player.PlayerType.Human));
         }
     }
 }

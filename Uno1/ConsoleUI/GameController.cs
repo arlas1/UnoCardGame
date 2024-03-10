@@ -35,7 +35,7 @@ public class GameController
                 {
                     var selectedCard = AiChoseRandomCard(validCards);
                     
-                    var aiPlayerWon = CheckDidThePlayerWin();
+                    bool aiPlayerWon = CheckDidThePlayerWin();
                     if (aiPlayerWon)
                     {
                         break;
@@ -127,7 +127,7 @@ public class GameController
                         {
                             PlaceCardOnStockPile(selectedCard);
 
-                            var humanPlayerWon = CheckDidThePlayerWin();
+                            bool humanPlayerWon = CheckDidThePlayerWin();
                             if (humanPlayerWon)
                             {
                                 break;

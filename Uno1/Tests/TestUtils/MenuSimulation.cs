@@ -1,8 +1,8 @@
 ﻿namespace Tests.TestUtils;
 
-public static class MenuTestUtils
+public static class MenuSimulation
 {
-    public static void MenuSimulationRun(Action newGameMethod, Action loadGameMethod)
+    public static void Run(Action newGameMethod, Action loadGameMethod)
     {
         string[] menuOptions = { "Start a new game", "Load game", "Exit" };
         var selectedIndex = 0;

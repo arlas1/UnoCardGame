@@ -62,7 +62,7 @@ public class GameManager(AppDbContext context)
                 GameStateId = gameStateEntity.Id
             };
 
-            context.UnoDeck.Add(unoDeckEntity);
+            context.UnoDecks.Add(unoDeckEntity);
         }
 
         context.SaveChanges();
@@ -103,14 +103,14 @@ public class GameManager(AppDbContext context)
         if (gameState != null)
         {
             var hands = context.Hands.Where(hand => hand.GameStateId == gameId);
-            var stockPiles = context.StockPile.Where(stockPile => stockPile.GameStateId == gameId);
+            var stockPiles = context.StockPiles.Where(stockPile => stockPile.GameStateId == gameId);
             var players = context.Players.Where(player => player.GameStateId == gameId);
-            var unoDecks = context.UnoDeck.Where(deck => deck.GameStateId == gameId);
+            var unoDecks = context.UnoDecks.Where(deck => deck.GameStateId == gameId);
 
             context.Hands.RemoveRange(hands);
-            context.StockPile.RemoveRange(stockPiles);
+            context.StockPiles.RemoveRange(stockPiles);
             context.Players.RemoveRange(players);
-            context.UnoDeck.RemoveRange(unoDecks);
+            context.UnoDecks.RemoveRange(unoDecks);
 
             context.GameStates.Remove(gameState);
 
@@ -123,7 +123,7 @@ public class GameManager(AppDbContext context)
     {
         var gameState = context.GameStates.SingleOrDefault(gs => gs.Id == gameId);
 
-        var unoDeck = context.UnoDeck.Where(sp => sp.GameStateId == gameId);
+        var unoDeck = context.UnoDecks.Where(sp => sp.GameStateId == gameId);
         var takenCards = unoDeck.Take(gameState!.MaxCardAmount).ToList();
 
         var players = await context.Players
@@ -160,7 +160,7 @@ public class GameManager(AppDbContext context)
             context.Hands.Add(handEntity);
         }
 
-        context.UnoDeck.RemoveRange(takenCards);
+        context.UnoDecks.RemoveRange(takenCards);
         await context.SaveChangesAsync();
 
         return (player.Id, gameState.PlayersMaxAmount);
@@ -191,7 +191,7 @@ public class GameManager(AppDbContext context)
         gameState!.IsGameStarted = 1;
         context.SaveChanges();
 
-        var unoDeck = context.UnoDeck.Where(sp => sp.GameStateId == gameId);
+        var unoDeck = context.UnoDecks.Where(sp => sp.GameStateId == gameId);
         var gameEngine = new GameEngine()
         {
             GameState =
@@ -209,7 +209,7 @@ public class GameManager(AppDbContext context)
 
         var cardToDelete = gameEngine.CheckFirstCardInGame();
 
-        var stockPile = context.StockPile;
+        var stockPile = context.StockPiles;
         var stockPileEntity = new StockPile()
         {
             CardColor = (int)gameEngine.GameState.StockPile.Last().CardColor,
@@ -219,12 +219,12 @@ public class GameManager(AppDbContext context)
 
         stockPile.Add(stockPileEntity);
 
-        var cardToRemove = context.UnoDeck
+        var cardToRemove = context.UnoDecks
             .FirstOrDefault(card => card.GameStateId == gameId
                                     && card.CardColor == (int)cardToDelete.CardColor
                                     && card.CardValue == (int)cardToDelete.CardValue);
 
-        context.UnoDeck.Remove(cardToRemove!);
+        context.UnoDecks.Remove(cardToRemove!);
         context.SaveChanges();
 
     }
@@ -262,7 +262,7 @@ public class GameManager(AppDbContext context)
             }
         };
         
-        var unoDeck = context.UnoDeck.Where(card => card.GameStateId == gameId);
+        var unoDeck = context.UnoDecks.Where(card => card.GameStateId == gameId);
         if (!unoDeck.Any())
         {
             foreach (var card in gameEngine.GameState.UnoDeck.SerializedCards)
@@ -274,7 +274,7 @@ public class GameManager(AppDbContext context)
                     GameStateId = gameId
                 };
 
-                context.UnoDeck.Add(unoDeckEntity);
+                context.UnoDecks.Add(unoDeckEntity);
             }
 
             await context.SaveChangesAsync();
@@ -285,7 +285,7 @@ public class GameManager(AppDbContext context)
             gameEngine.GameState.PlayersList.Add(new Player(0, "a", Player.PlayerType.Human));
         }
 
-        var lastStockPileCard = context.StockPile
+        var lastStockPileCard = context.StockPiles
             .Where(stockPile => stockPile.GameStateId == gameId)
             .OrderBy(stockPile => stockPile.Id)
             .Last();
@@ -298,7 +298,7 @@ public class GameManager(AppDbContext context)
         gameEngine.GetNextPlayerId(currentPlayerId);
 
         // ---------------------------------------------------------------------------------- //
-        var lastDeckCard = context.UnoDeck
+        var lastDeckCard = context.UnoDecks
             .Where(deck => deck.GameStateId == gameId)
             .OrderBy(deck => deck.Id) // Add an OrderBy clause here
             .Last();
@@ -313,7 +313,7 @@ public class GameManager(AppDbContext context)
 
         context.Hands.Add(handEntity);
         gameState.CurrentPlayerIndex = gameEngine.GameState.CurrentPlayerIndex;
-        context.UnoDeck.RemoveRange(context.UnoDeck.Where(card => card.Id == lastDeckCard.Id));
+        context.UnoDecks.RemoveRange(context.UnoDecks.Where(card => card.Id == lastDeckCard.Id));
         await context.SaveChangesAsync();
 
         var currentPlayer = players[gameState.CurrentPlayerIndex];
@@ -341,7 +341,7 @@ public class GameManager(AppDbContext context)
             }
         };
 
-        var lastStockPileCard = context.StockPile
+        var lastStockPileCard = context.StockPiles
             .Where(stockPile => stockPile.GameStateId == gameId)
             .OrderBy(stockPile => stockPile.Id)
             .Last();
@@ -421,7 +421,7 @@ public class GameManager(AppDbContext context)
         };
 
         // Retrieve necessary data from the database
-        var unoDeck = await context.UnoDeck
+        var unoDeck = await context.UnoDecks
             .Where(unoCard => unoCard.GameStateId == gameId)
             .ToListAsync();
 
@@ -443,7 +443,7 @@ public class GameManager(AppDbContext context)
                     GameStateId = gameId
                 };
 
-                context.UnoDeck.Add(unoDeckEntity);
+                context.UnoDecks.Add(unoDeckEntity);
             }
 
             await context.SaveChangesAsync();
@@ -468,7 +468,7 @@ public class GameManager(AppDbContext context)
         var currentPlayerIndex = players.FindIndex(player => player.Id == playerId);
 
         // Perform the necessary game logic
-        context.StockPile.Add(new StockPile
+        context.StockPiles.Add(new StockPile
         {
             CardColor = (int)card.CardColor,
             CardValue = (int)card.CardValue,
@@ -504,14 +504,14 @@ public class GameManager(AppDbContext context)
                 PlayerId = currentPlayer.Id,
                 GameStateId = gameId
             });
-            var unoDeckCardToRemove = context.UnoDeck
+            var unoDeckCardToRemove = context.UnoDecks
                 .Where(deckCard =>
                     deckCard.GameStateId == gameId &&
                     deckCard.CardColor == (int)handCard.CardColor &&
                     deckCard.CardValue == (int)handCard.CardValue)
                 .OrderByDescending(deckCard => deckCard.Id)
                 .FirstOrDefault();
-            context.UnoDeck.Remove(unoDeckCardToRemove!);
+            context.UnoDecks.Remove(unoDeckCardToRemove!);
         }
 
         await context.SaveChangesAsync();
@@ -548,7 +548,7 @@ public class GameManager(AppDbContext context)
                 CardColorChoice = gameState.CardColorChoice == 4 ? default : (UnoCard.Color)gameState.CardColorChoice
             }
         };
-        var lastStockPileCard = context.StockPile
+        var lastStockPileCard = context.StockPiles
             .Where(stockPile => stockPile.GameStateId == gameId)
             .OrderBy(stockPile => stockPile.Id)
             .Last();
@@ -558,7 +558,7 @@ public class GameManager(AppDbContext context)
         gameEngine.GameState.StockPile.Add(new UnoCard(color, value));
 
         // Retrieve necessary data from the database
-        var unoDeck = await context.UnoDeck
+        var unoDeck = await context.UnoDecks
             .Where(unoCard => unoCard.GameStateId == gameId)
             .ToListAsync();
 
@@ -606,7 +606,7 @@ public class GameManager(AppDbContext context)
             selectedCard = validCards[randomIndex];
 
             // Update database with AI move
-            context.StockPile.Add(new StockPile
+            context.StockPiles.Add(new StockPile
             {
                 CardColor = (int)selectedCard.CardColor,
                 CardValue = (int)selectedCard.CardValue,
@@ -653,14 +653,14 @@ public class GameManager(AppDbContext context)
                     PlayerId = nextPlayer.Id,
                     GameStateId = gameId
                 });
-                var unoDeckCardToRemove = context.UnoDeck
+                var unoDeckCardToRemove = context.UnoDecks
                     .Where(deckCard =>
                         deckCard.GameStateId == gameId &&
                         deckCard.CardColor == (int)handCard.CardColor &&
                         deckCard.CardValue == (int)handCard.CardValue)
                     .OrderByDescending(deckCard => deckCard.Id)
                     .FirstOrDefault();
-                context.UnoDeck.Remove(unoDeckCardToRemove!);
+                context.UnoDecks.Remove(unoDeckCardToRemove!);
             }
 
             await CheckForWinner(gameId, playerId);
@@ -686,14 +686,14 @@ public class GameManager(AppDbContext context)
             });
 
             // Update database with drawn card
-            var unoDeckCardToRemove = context.UnoDeck
+            var unoDeckCardToRemove = context.UnoDecks
                 .Where(deckCard =>
                     deckCard.GameStateId == gameId &&
                     deckCard.CardColor == (int)selectedCard.CardColor &&
                     deckCard.CardValue == (int)selectedCard.CardValue)
                 .OrderByDescending(deckCard => deckCard.Id) // Order by Id in descending order
                 .FirstOrDefault();
-            context.UnoDeck.Remove(unoDeckCardToRemove!);
+            context.UnoDecks.Remove(unoDeckCardToRemove!);
 
             await context.SaveChangesAsync();
 

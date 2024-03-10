@@ -49,8 +49,8 @@ public class IndexModel(DAL.AppDbContext context) : PageModel
     {
         GameState = context.GameStates.SingleOrDefault(state => state.Id == GameId)!;
         Players = await context.Players.Where(player => player.GameStateId == GameId).ToListAsync();
-        UnoDeck = await context.UnoDeck.Where(deck => deck.GameStateId == GameId).ToListAsync();
-        StockPile = await context.StockPile.Where(pile => pile.GameStateId == GameId).ToListAsync();
+        UnoDeck = await context.UnoDecks.Where(deck => deck.GameStateId == GameId).ToListAsync();
+        StockPile = await context.StockPiles.Where(pile => pile.GameStateId == GameId).ToListAsync();
         AllHandCards = await context.Hands.Where(hand => hand.GameStateId == GameId).ToListAsync();
 
         foreach (var player in Players)
@@ -155,8 +155,8 @@ public class IndexModel(DAL.AppDbContext context) : PageModel
         }
         
         Players = await context.Players.Where(player => player.GameStateId == GameId).ToListAsync();
-        UnoDeck = await context.UnoDeck.Where(deck => deck.GameStateId == GameId).ToListAsync();
-        StockPile = await context.StockPile.Where(pile => pile.GameStateId == GameId).ToListAsync();
+        UnoDeck = await context.UnoDecks.Where(deck => deck.GameStateId == GameId).ToListAsync();
+        StockPile = await context.StockPiles.Where(pile => pile.GameStateId == GameId).ToListAsync();
         AllHandCards = await context.Hands.Where(hand => hand.GameStateId == GameId).ToListAsync();
         
         foreach (var player in Players)

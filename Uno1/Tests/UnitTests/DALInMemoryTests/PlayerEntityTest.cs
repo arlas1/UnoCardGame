@@ -1,12 +1,10 @@
 ﻿using DAL;
 using FluentAssert;
 using FluentAssertions;
-using Tests.TestUtils.DALTestsUtils;
-using Tests.TestUtils.DALTestsUtils.PlayerEntityUtils;
-using Xunit;
+using Tests.TestUtils.DALTestsUtils.PlayerEntityTestUtils;
 
 // ReSharper disable InconsistentNaming
-namespace Tests.UnitTests.DALTests;
+namespace Tests.UnitTests.DALInMemoryTests;
 
 public class PlayerEntityTest
 {
@@ -23,14 +21,14 @@ public class PlayerEntityTest
     public async void PlayerEntity_AddPlayer_PlayerAddedSuccessfully()
     {
         // Arrange
-        var samplePlayer = EntityTestUtils.CreatePlayerEntityWithId(SampleId);
         var playerRepository = new PlayerRepository(_dbContext);
+        var samplePlayer = playerRepository.CreateEntityWithId(SampleId);
 
         // Act
-        await playerRepository.AddPlayerAsync(samplePlayer);
+        await playerRepository.AddAsync(samplePlayer);
 
         // Assert
-        var addedPlayers = playerRepository.GetAllPlayersAsync();
+        var addedPlayers = playerRepository.GetAllAsync();
         addedPlayers.Should()
                     .ContainSingle()
                     .Which
@@ -38,25 +36,25 @@ public class PlayerEntityTest
                     .BeEquivalentTo(samplePlayer);
         
         // Clean up 
-        await playerRepository.DeleteAllPlayersAsync();
+        await playerRepository.DeleteAllAsync();
     }
     
     [Fact]
     public async void PlayerEntity_AddAndRetrievePlayer_PlayerRetrievedSuccessfully()
     {
         // Arrange
-        var samplePlayer = EntityTestUtils.CreatePlayerEntityWithId(SampleId);
         var playerRepository = new PlayerRepository(_dbContext);
+        var samplePlayer = playerRepository.CreateEntityWithId(SampleId);
 
         // Act
-        await playerRepository.AddPlayerAsync(samplePlayer);
-        var addedPlayer = playerRepository.GetPlayerById(SampleId);
+        await playerRepository.AddAsync(samplePlayer);
+        var addedPlayer = playerRepository.GetById(SampleId);
 
         // Assert
         addedPlayer.Should().NotBeNull();
         addedPlayer.Should().BeEquivalentTo(samplePlayer);
         // Clean up 
-        await playerRepository.DeleteAllPlayersAsync();
+        await playerRepository.DeleteAllAsync();
     }
     
     [Theory]
@@ -69,24 +67,24 @@ public class PlayerEntityTest
     {
         // Arrange
         var playerRepository = new PlayerRepository(_dbContext);
-        var samplePlayer = EntityTestUtils.CreatePlayerEntityWithId(SampleId);
+        var samplePlayer = playerRepository.CreateEntityWithId(SampleId);
         
         var samplePlayerName = samplePlayer.Name; // Is "p1"
         var samplePlayerRole = samplePlayer.Role; // Is 0
         var samplePlayerType = samplePlayer.Type; // Is 0
         
         // Act
-        await playerRepository.AddPlayerAsync(samplePlayer);
+        await playerRepository.AddAsync(samplePlayer);
         
-        var addedPlayer = playerRepository.GetPlayerById(SampleId);
+        var addedPlayer = playerRepository.GetById(SampleId);
         addedPlayer!.Name = newName;
         addedPlayer!.Role = newRole;
         addedPlayer!.Type = newType;
         
-        await playerRepository.UpdatePlayerAsync(addedPlayer);
+        await playerRepository.UpdateAsync(addedPlayer);
         
         // Assert
-        var updatedPlayer = playerRepository.GetPlayerById(SampleId);
+        var updatedPlayer = playerRepository.GetById(SampleId);
         
         updatedPlayer!.Name.Should().NotBeEquivalentTo(samplePlayerName);
         updatedPlayer.Name.ShouldBeEqualTo(newName);
@@ -98,22 +96,22 @@ public class PlayerEntityTest
         updatedPlayer.Type.ShouldBeEqualTo(newType);
 
         // Clean up 
-        await playerRepository.DeleteAllPlayersAsync();
+        await playerRepository.DeleteAllAsync();
     }
     
     [Fact]
     public async void PlayerEntity_AddAndDeletePlayer_PlayerDeletedSuccessfully()
     {
         // Arrange
-        var samplePlayer = EntityTestUtils.CreatePlayerEntityWithId(SampleId);
         var playerRepository = new PlayerRepository(_dbContext);
+        var samplePlayer = playerRepository.CreateEntityWithId(SampleId);
         
         // Act
-        await playerRepository.AddPlayerAsync(samplePlayer);
-        await playerRepository.DeletePlayerAsync(SampleId);
+        await playerRepository.AddAsync(samplePlayer);
+        await playerRepository.DeleteAsync(SampleId);
 
         // Assert
-        var listWithAllPlayers = playerRepository.GetAllPlayersAsync();
+        var listWithAllPlayers = playerRepository.GetAllAsync();
         listWithAllPlayers.Should().BeEmpty();
     }
 

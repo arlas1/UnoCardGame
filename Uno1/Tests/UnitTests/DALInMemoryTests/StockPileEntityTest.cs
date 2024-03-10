@@ -1,12 +1,9 @@
 ﻿using DAL;
 using FluentAssert;
 using FluentAssertions;
-using Tests.TestUtils.DALTestsUtils;
-using Tests.TestUtils.DALTestsUtils.PlayerEntityUtils;
-using Tests.TestUtils.DALTestsUtils.StockPileEntityUtils;
-using Xunit;
+using Tests.TestUtils.DALTestsUtils.StockPileEntityTestUtils;
 
-namespace Tests.UnitTests.DALTests;
+namespace Tests.UnitTests.DALInMemoryTests;
 
 public class StockPileEntityTest
 {
@@ -23,14 +20,14 @@ public class StockPileEntityTest
     public async void StockPileEntity_AddCard_CardAddedSuccessfully()
     {
         // Arrange
-        var sampleCard = EntityTestUtils.CreateStockPileCardEntityWithId(SampleId);
         var stockPileRepository = new StockPileRepository(_dbContext);
+        var sampleCard = stockPileRepository.CreateEntityWithId(SampleId);
 
         // Act
-        await stockPileRepository.AddStockPileCardAsync(sampleCard);
+        await stockPileRepository.AddAsync(sampleCard);
 
         // Assert
-        var addedCards = stockPileRepository.GetAllStockPileCardsAsync();
+        var addedCards = stockPileRepository.GetAllAsync();
         addedCards.Should()
                     .ContainSingle()
                     .Which
@@ -38,25 +35,25 @@ public class StockPileEntityTest
                     .BeEquivalentTo(sampleCard);
         
         // Clean up 
-        await stockPileRepository.DeleteAllStockPileCardsAsync();
+        await stockPileRepository.DeleteAllAsync();
     }
     
     [Fact]
     public async void StockPileEntity_AddAndRetrieveCard_CardRetrievedSuccessfully()
     {
         // Arrange
-        var sampleCard = EntityTestUtils.CreateStockPileCardEntityWithId(SampleId);
         var stockPileRepository = new StockPileRepository(_dbContext);
-
+        var sampleCard = stockPileRepository.CreateEntityWithId(SampleId);
+        
         // Act
-        await stockPileRepository.AddStockPileCardAsync(sampleCard);
-        var addedCard = stockPileRepository.GetStockPileById(SampleId);
+        await stockPileRepository.AddAsync(sampleCard);
+        var addedCard = stockPileRepository.GetById(SampleId);
 
         // Assert
         addedCard.Should().NotBeNull();
         addedCard.Should().BeEquivalentTo(sampleCard);
         // Clean up 
-        await stockPileRepository.DeleteAllStockPileCardsAsync();
+        await stockPileRepository.DeleteAllAsync();
     }
     
     [Theory]
@@ -68,22 +65,22 @@ public class StockPileEntityTest
     {
         // Arrange
         var stockPileRepository = new StockPileRepository(_dbContext);
-        var sampleCard = EntityTestUtils.CreateStockPileCardEntityWithId(SampleId);
+        var sampleCard = stockPileRepository.CreateEntityWithId(SampleId);
         
         var sampleCardColor = sampleCard.CardColor; // Is 0
         var sampleCardValue = sampleCard.CardValue; // Is 0
         
         // Act
-        await stockPileRepository.AddStockPileCardAsync(sampleCard);
+        await stockPileRepository.AddAsync(sampleCard);
         
-        var addedPlayer = stockPileRepository.GetStockPileById(SampleId);
+        var addedPlayer = stockPileRepository.GetById(SampleId);
         addedPlayer!.CardColor = newColor;
         addedPlayer!.CardValue = newValue;
         
-        await stockPileRepository.UpdateStockPileCardAsync(addedPlayer);
+        await stockPileRepository.UpdateAsync(addedPlayer);
         
         // Assert
-        var updatedPlayer = stockPileRepository.GetStockPileById(SampleId);
+        var updatedPlayer = stockPileRepository.GetById(SampleId);
         
         updatedPlayer!.CardColor.ShouldNotBeEqualTo(sampleCardColor);
         updatedPlayer.CardValue.ShouldBeEqualTo(newColor);
@@ -92,22 +89,22 @@ public class StockPileEntityTest
         updatedPlayer.CardValue.ShouldBeEqualTo(newValue);
 
         // Clean up 
-        await stockPileRepository.DeleteAllStockPileCardsAsync();
+        await stockPileRepository.DeleteAllAsync();
     }
     
     [Fact]
     public async void StockPileEntity_AddAndDeleteCard_CardDeletedSuccessfully()
     {
         // Arrange
-        var sampleCard = EntityTestUtils.CreateStockPileCardEntityWithId(SampleId);
         var stockPileRepository = new StockPileRepository(_dbContext);
+        var sampleCard = stockPileRepository.CreateEntityWithId(SampleId);
         
         // Act
-        await stockPileRepository.AddStockPileCardAsync(sampleCard);
-        await stockPileRepository.DeleteStockPileCardAsync(SampleId);
+        await stockPileRepository.AddAsync(sampleCard);
+        await stockPileRepository.DeleteAsync(SampleId);
 
         // Assert
-        var listWithAllStockPileCards = stockPileRepository.GetAllStockPileCardsAsync();
+        var listWithAllStockPileCards = stockPileRepository.GetAllAsync();
         listWithAllStockPileCards.Should().BeEmpty();
     }
 }

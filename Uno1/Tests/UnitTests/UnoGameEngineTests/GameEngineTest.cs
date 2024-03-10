@@ -6,7 +6,7 @@ namespace Tests.UnitTests.UnoGameEngineTests;
 
 public class GameEngineTest
 {
-    [Fact]   // Which class tested / Action / Result
+    [Fact]  
     public void GameEngine_Initialize_GameStatePropertyInitialized()
     {
         // Arrange
@@ -39,7 +39,7 @@ public class GameEngineTest
         sampleGameEngine.DeleteCardsWithValueToAvoid(UnoCard.Value.WildFour);
         
         // Assert
-        var noWildFourCardsLeft = GameEngineTestUtils.NoCardsWithValue(sampleGameEngine, UnoCard.Value.WildFour);
+        var noWildFourCardsLeft = GameEngineTestUtils.CheckForCardsWithValue(sampleGameEngine, UnoCard.Value.WildFour);
         Assert.True(noWildFourCardsLeft);
     }
 

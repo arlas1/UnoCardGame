@@ -16,11 +16,10 @@ public class JsonRepository
 
         var gameStateCopy = gameEngine.GetGameStateCopy();
         var jsonString = JsonSerializer.Serialize(gameStateCopy, jsonOptions);
-
-        const string jsonFolderPath = @"C:\Users\lasim\RiderProjects\icd0008-23f\Uno1\DAL\JsonSaves/";
         
+        var jsonFolderPath = GetPathForTheJsonSaves();
+    
         var fileAmount = Directory.GetFiles(jsonFolderPath, "*.json").Length + 1;
-
         var filePath = Path.Combine(jsonFolderPath, $"{fileAmount}.json");
 
         File.WriteAllText(filePath, jsonString);
@@ -39,5 +38,13 @@ public class JsonRepository
         gameEngine.GameState.IsColorChosen = gameStateCopy.IsColorChosen;
         gameEngine.GameState.SelectedCardIndex = gameStateCopy.SelectedCardIndex;
     }
+
+    public static string GetPathForTheJsonSaves()
+    {
+        var currentDirectory = Directory.GetCurrentDirectory();
+        var solutionDirectory = Directory.GetParent(currentDirectory)?.Parent?.Parent?.FullName;
+        return Path.Combine(solutionDirectory!, "..", "DAL", "JsonSaves");
+    }
+
 }
 

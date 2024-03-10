@@ -25,7 +25,7 @@ public class GameSetup
     
     public static void LoadGameJson(GameEngine gameEngine)
     {
-        var jsonFolderPath = @"C:\Users\lasim\RiderProjects\icd0008-23f\Uno1\DAL\JsonSaves/";
+        var jsonFolderPath = JsonRepository.GetPathForTheJsonSaves();
 
         var savedGames = Directory.GetFiles(jsonFolderPath, "*.json");
         if (savedGames.Length == 0)
@@ -52,7 +52,6 @@ public class GameSetup
                 }
 
                 Console.WriteLine($"Game ID: {Path.GetFileNameWithoutExtension(savedGames[i])}");
-
                 Console.ResetColor();
             }
 

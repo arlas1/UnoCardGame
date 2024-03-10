@@ -1,43 +1,52 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using DAL;
+﻿using DAL;
 using DAL.DbEntities;
 
-namespace Tests.TestUtils.DALTestsUtils.PlayerEntityUtils;
+namespace Tests.TestUtils.DALTestsUtils.PlayerEntityTestUtils;
 
 public class PlayerRepository(AppDbContext dbContext) : IPlayerRepository
 {
-    public async Task AddPlayerAsync(Player player)
+    public Player CreateEntityWithId(int id)
+    {
+        return new Player()
+        {
+            Id = 0,
+            Name = "p1",
+            Type = 0,
+            Role = 0,
+            GameStateId = id
+        };
+    }
+    
+    public async Task AddAsync(Player player)
     {
         await dbContext.Players.AddAsync(player);
         await dbContext.SaveChangesAsync();
     }
 
-    public async Task UpdatePlayerAsync(Player player)
+    public async Task UpdateAsync(Player player)
     {
         dbContext.Players.Update(player);
         await dbContext.SaveChangesAsync();
     }
     
-    public async Task DeletePlayerAsync(int id)
+    public async Task DeleteAsync(int id)
     {
         var player = dbContext.Players.SingleOrDefault(player => player.GameStateId == id)!;
         dbContext.Players.Remove(player);
         await dbContext.SaveChangesAsync();
     }
 
-    public Player? GetPlayerById(int id)
+    public Player? GetById(int id)
     {
         return dbContext.Players.SingleOrDefault(player => player.GameStateId == id);
     }
 
-    public List<Player> GetAllPlayersAsync()
+    public IEnumerable<Player> GetAllAsync()
     {
         return dbContext.Players.ToList();
     }
     
-    public async Task DeleteAllPlayersAsync()
+    public async Task DeleteAllAsync()
     {
         dbContext.Players.RemoveRange(dbContext.Players);
         await dbContext.SaveChangesAsync();
