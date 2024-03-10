@@ -6,7 +6,6 @@ using Microsoft.EntityFrameworkCore;
 using Player = Domain.Player;
 using UnoDeck = Domain.UnoDeck;
 
-
 namespace WebApp.GamesManager;
 
 public class GameManager(AppDbContext context)
@@ -14,7 +13,7 @@ public class GameManager(AppDbContext context)
     public (int gameId, int playerId) CreateTheGame(string nickname, int playersMaxAmount, int cardsMaxInHand,
                                                     UnoCard.Value? cardValueToAvoid)
     {
-        var gameEngine = new GameEngine()
+        var gameEngine = new GameEngine
         {
             GameState =
             {
@@ -37,7 +36,7 @@ public class GameManager(AppDbContext context)
 
         context.Database.Migrate();
 
-        var gameStateEntity = new DAL.DbEntities.GameState()
+        var gameStateEntity = new DAL.DbEntities.GameState
         {
             GameDirection = 0,
             CurrentPlayerIndex = 0,
@@ -55,7 +54,7 @@ public class GameManager(AppDbContext context)
         
         foreach (var card in gameEngine.GameState.UnoDeck.SerializedCards)
         {
-            var unoDeckEntity = new DAL.DbEntities.UnoDeck()
+            var unoDeckEntity = new DAL.DbEntities.UnoDeck
             {
                 CardColor = (int)card.CardColor,
                 CardValue = (int)card.CardValue,
@@ -67,7 +66,7 @@ public class GameManager(AppDbContext context)
 
         context.SaveChanges();
 
-        var playerEntity = new DAL.DbEntities.Player()
+        var playerEntity = new DAL.DbEntities.Player
         {
             Name = player.Name,
             Type = (int)player.Type,
@@ -80,7 +79,7 @@ public class GameManager(AppDbContext context)
 
         foreach (var card in player.Hand)
         {
-            var handEntity = new Hand()
+            var handEntity = new Hand
             {
                 CardColor = (int)card.CardColor,
                 CardValue = (int)card.CardValue,
@@ -137,7 +136,7 @@ public class GameManager(AppDbContext context)
             nickname = $"Player {players.Count + 1}";
         }
 
-        var player = new DAL.DbEntities.Player()
+        var player = new DAL.DbEntities.Player
         {
             Name = nickname,
             Type = (int)playerType,
@@ -150,7 +149,7 @@ public class GameManager(AppDbContext context)
 
         foreach (var card in takenCards)
         {
-            var handEntity = new Hand()
+            var handEntity = new Hand
             {
                 CardColor = card.CardColor,
                 CardValue = card.CardValue,
@@ -192,7 +191,7 @@ public class GameManager(AppDbContext context)
         context.SaveChanges();
 
         var unoDeck = context.UnoDecks.Where(sp => sp.GameStateId == gameId);
-        var gameEngine = new GameEngine()
+        var gameEngine = new GameEngine
         {
             GameState =
             {
@@ -210,7 +209,7 @@ public class GameManager(AppDbContext context)
         var cardToDelete = gameEngine.CheckFirstCardInGame();
 
         var stockPile = context.StockPiles;
-        var stockPileEntity = new StockPile()
+        var stockPileEntity = new StockPile
         {
             CardColor = (int)gameEngine.GameState.StockPile.Last().CardColor,
             CardValue = (int)gameEngine.GameState.StockPile.Last().CardValue,
@@ -233,12 +232,7 @@ public class GameManager(AppDbContext context)
     {
         var gameState = context.GameStates.SingleOrDefault(gs => gs.Id == gameId);
 
-        if (gameState!.IsGameStarted == 1)
-        {
-            return true;
-        }
-
-        return false;
+        return gameState!.IsGameStarted == 1;
     }
 
     public async Task DrawCard(int gameId, int playerId)
@@ -250,7 +244,7 @@ public class GameManager(AppDbContext context)
 
         var currentPlayerId = players.IndexOf(players.FirstOrDefault(player => player.Id == playerId)!);
 
-        var gameEngine = new GameEngine()
+        var gameEngine = new GameEngine
         {
             GameState =
             {
@@ -267,7 +261,7 @@ public class GameManager(AppDbContext context)
         {
             foreach (var card in gameEngine.GameState.UnoDeck.SerializedCards)
             {
-                var unoDeckEntity = new DAL.DbEntities.UnoDeck()
+                var unoDeckEntity = new DAL.DbEntities.UnoDeck
                 {
                     CardColor = (int)card.CardColor,
                     CardValue = (int)card.CardValue,
@@ -303,7 +297,7 @@ public class GameManager(AppDbContext context)
             .OrderBy(deck => deck.Id) // Add an OrderBy clause here
             .Last();
 
-        var handEntity = new Hand()
+        var handEntity = new Hand
         {
             CardColor = lastDeckCard.CardColor,
             CardValue = lastDeckCard.CardValue,
@@ -328,7 +322,7 @@ public class GameManager(AppDbContext context)
     {
         var gameState = context.GameStates.SingleOrDefault(gs => gs.Id == gameId);
 
-        var gameEngine = new GameEngine()
+        var gameEngine = new GameEngine
         {
             GameState =
             {
@@ -406,7 +400,7 @@ public class GameManager(AppDbContext context)
         var gameState = context.GameStates.SingleOrDefault(gs => gs.Id == gameId);
 
         // Create a game engine and initialize it with the current game state
-        var gameEngine = new GameEngine()
+        var gameEngine = new GameEngine
         {
             GameState =
             {
@@ -436,7 +430,7 @@ public class GameManager(AppDbContext context)
             var gameEngineForAdditionalUnoDeck = new GameEngine();
             foreach (var unoCard in gameEngineForAdditionalUnoDeck.GameState.UnoDeck.SerializedCards)
             {
-                var unoDeckEntity = new DAL.DbEntities.UnoDeck()
+                var unoDeckEntity = new DAL.DbEntities.UnoDeck
                 {
                     CardColor = (int)unoCard.CardColor,
                     CardValue = (int)unoCard.CardValue,
@@ -536,7 +530,7 @@ public class GameManager(AppDbContext context)
             .ToListAsync();
 
 
-        var gameEngine = new GameEngine()
+        var gameEngine = new GameEngine
         {
             GameState =
             {
@@ -572,7 +566,7 @@ public class GameManager(AppDbContext context)
             ));
         }
 
-        Player currentPlayer = new Player(1, "a", Player.PlayerType.Human);
+        var currentPlayer = new Player(1, "a", Player.PlayerType.Human);
         var plId = 0;
         foreach (var playerEntity in players)
         {

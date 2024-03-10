@@ -44,7 +44,7 @@ public class IndexModel(AppDbContext context) : PageModel
             var gameManager = new GameManager(context);
             if (gameManager.CheckGameStart(GameId))
             {
-                return RedirectToPage($"/GamePlay/Index", new { GameId, PlayerId, IsBoss = 0 });
+                return RedirectToPage("/GamePlay/Index", new { GameId, PlayerId, IsBoss = 0 });
             }
         }
         
@@ -59,24 +59,27 @@ public class IndexModel(AppDbContext context) : PageModel
 
     public async Task<IActionResult> OnPost()
     {
-        if (PlayerType == Domain.Player.PlayerType.Human)
+        switch (PlayerType)
         {
-            Players = await context.Players.Where(player => player.GameStateId == GameId).ToListAsync();
+            case Domain.Player.PlayerType.Human:
+            {
+                Players = await context.Players.Where(player => player.GameStateId == GameId).ToListAsync();
         
-            var gameManager = new GameManager(context);
-            var data = await gameManager.JoinTheGame(GameId, Nickname!, PlayerType);
+                var gameManager = new GameManager(context);
+                var data = await gameManager.JoinTheGame(GameId, Nickname!, PlayerType);
         
-            PlayerId = data.playerId;
-            MaxAmount = data.maxAmount;
+                PlayerId = data.playerId;
+                MaxAmount = data.maxAmount;
         
-            PlayersToStart = MaxAmount - Players.Count;
-        }
-        else if (PlayerType == Domain.Player.PlayerType.Ai)
-        {
-            var gameManager = new GameManager(context);
-            await gameManager.JoinTheGame(GameId, Nickname!, PlayerType);
-            return RedirectToPage($"/Dashboard/Index");
-
+                PlayersToStart = MaxAmount - Players.Count;
+                break;
+            }
+            case Domain.Player.PlayerType.Ai:
+            {
+                var gameManager = new GameManager(context);
+                await gameManager.JoinTheGame(GameId, Nickname!, PlayerType);
+                return RedirectToPage("/Dashboard/Index");
+            }
         }
 
         return Page();

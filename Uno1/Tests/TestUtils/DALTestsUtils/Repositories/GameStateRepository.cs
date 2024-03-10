@@ -8,7 +8,7 @@ public class GameStateRepository(AppDbContext dbContext) : IGameStateRepository
 {
     public GameState CreateEntityWithId(int id)
     {
-        return new GameState()
+        return new GameState
         {
            Id = 0,
            GameDirection = 0,

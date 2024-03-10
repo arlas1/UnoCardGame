@@ -8,7 +8,7 @@ public class PlayerRepository(AppDbContext dbContext) : IPlayerRepository
 {
     public Player CreateEntityWithId(int id)
     {
-        return new Player()
+        return new Player
         {
             Id = 0,
             Name = "p1",

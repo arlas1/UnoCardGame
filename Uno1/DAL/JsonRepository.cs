@@ -4,14 +4,14 @@ using UnoGameEngine;
 
 namespace DAL;
 
-public class JsonRepository
+public static class JsonRepository
 {
     public static void SaveIntoJson(GameEngine gameEngine)
     {
-        var jsonOptions = new JsonSerializerOptions()
+        var jsonOptions = new JsonSerializerOptions
         {
             WriteIndented = true,
-            AllowTrailingCommas = true,
+            AllowTrailingCommas = true
         };
 
         var gameStateCopy = gameEngine.GetGameStateCopy();

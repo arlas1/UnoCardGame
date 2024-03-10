@@ -8,7 +8,7 @@ public class StockPileRepository(AppDbContext dbContext) : IStockPileRepository
 {
     public StockPile CreateEntityWithId(int id)
     {
-        return new StockPile()
+        return new StockPile
         {
             Id = 0,
             CardColor = 0,

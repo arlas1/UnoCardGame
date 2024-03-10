@@ -94,7 +94,7 @@ public class IndexModel(DAL.AppDbContext context) : PageModel
                 {
                     var winnerMessage = $"{players.SingleOrDefault(player => player.Id == gameState1.WinnerId)!.Name} won!";
                 
-                    return RedirectToPage($"/Dashboard/Index", new { WinnerMessage = winnerMessage });
+                    return RedirectToPage("/Dashboard/Index", new { WinnerMessage = winnerMessage });
                 }
                 break;
             }
@@ -125,7 +125,7 @@ public class IndexModel(DAL.AppDbContext context) : PageModel
                         {
                             var winnerMessage = $"{players.SingleOrDefault(player => player.Id == gameState1.WinnerId)!.Name} won!";
                 
-                            return RedirectToPage($"/Dashboard/Index", new { WinnerMessage = winnerMessage });
+                            return RedirectToPage("/Dashboard/Index", new { WinnerMessage = winnerMessage });
                         }
                     }
                 }
@@ -151,7 +151,7 @@ public class IndexModel(DAL.AppDbContext context) : PageModel
         {
             var winnerMessage = $"{players.SingleOrDefault(player => player.Id == GameState.WinnerId)!.Name} won in game Nr.{GameState.Id}!";
                 
-            return RedirectToPage($"/Dashboard/Index", new { WinnerMessage = winnerMessage }); 
+            return RedirectToPage("/Dashboard/Index", new { WinnerMessage = winnerMessage }); 
         }
         
         Players = await context.Players.Where(player => player.GameStateId == GameId).ToListAsync();
@@ -194,6 +194,6 @@ public class IndexModel(DAL.AppDbContext context) : PageModel
     
     public IActionResult Winner(bool hasWinner)
     {
-        return RedirectToPage($"/Dashboard/Index");
+        return RedirectToPage("/Dashboard/Index");
     }
 }

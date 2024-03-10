@@ -4,7 +4,7 @@ public static class Menu
 {
     public static void Run(Action newGameMethod, Action loadGameMethod)
     {
-        string[] menuOptions = { "Start a new game", "Load game", "Exit" };
+        string[] menuOptions = ["Start a new game", "Load game", "Exit"];
         var selectedIndex = 0;
 
         ConsoleKeyInfo key;

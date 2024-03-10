@@ -19,7 +19,7 @@ public class GameEngine
     
     public List<UnoCard> GetOneHand()
     {
-        List<UnoCard> listOfCards = new();
+        List<UnoCard> listOfCards = [];
         for (var j = 0; j < GameState.MaxCardsAmount; j++)
         {
             var drawnCard = GameState.UnoDeck.DrawCard();
@@ -66,10 +66,10 @@ public class GameEngine
             return card.CardColor == GameState.CardColorChoice;
         }
 
-        return (card.CardColor == GameState.StockPile.Last().CardColor ||
+        return card.CardColor == GameState.StockPile.Last().CardColor ||
                 card.CardValue == GameState.StockPile.Last().CardValue ||
                 UnoCard.Color.Wild == GameState.StockPile.Last().CardColor ||
-                card.CardColor == UnoCard.Color.Wild);
+                card.CardColor == UnoCard.Color.Wild;
     }
     
     public void GetNextPlayerId(int currentPlayerId)
@@ -159,7 +159,7 @@ public class GameEngine
 
     public GameStateCopy GetGameStateCopy()
     {
-        return new GameStateCopy()
+        return new GameStateCopy
         {
             GameDirection = GameState.GameDirection,
             CurrentPlayerIndex = GameState.CurrentPlayerIndex,

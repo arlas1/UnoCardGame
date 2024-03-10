@@ -8,7 +8,7 @@ public class UnoDeckRepository(AppDbContext dbContext) : IUnoDeckRepository
 {
     public UnoDeck CreateEntityWithId(int id)
     {
-        return new UnoDeck()
+        return new UnoDeck
         {
             Id = 0,
             CardColor = 0,

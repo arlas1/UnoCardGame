@@ -75,7 +75,7 @@
                     @(gameState.IsGameStarted == 0 ? "No" : "Yes")
                 </td>
                 <td>
-                    @foreach (var state in @Model.GameStates)
+                    @foreach (var state in Model.GameStates)
                     {
                         if (gameId == state.Id)
                         {

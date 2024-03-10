@@ -8,7 +8,7 @@ public class HandRepository(AppDbContext dbContext) : IHandRepository
 {
     public Hand CreateEntityWithId(int id)
     {
-        return new Hand()
+        return new Hand
         {
             Id = 0,
             CardColor = 0,

@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ConsoleUI;
 
-public class GameSetup
+public static class GameSetup
 {
     public static void NewGame(GameEngine gameEngine)
     {
@@ -34,7 +34,7 @@ public class GameSetup
             return;
         }
 
-        int selectedGameIndex = 0;
+        var selectedGameIndex = 0;
 
         ConsoleKeyInfo key;
 
@@ -92,7 +92,7 @@ public class GameSetup
             return;
         }
 
-        int selectedGameIndex = 0;
+        var selectedGameIndex = 0;
 
         ConsoleKeyInfo key;
 

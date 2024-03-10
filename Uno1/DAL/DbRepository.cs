@@ -23,7 +23,7 @@ public static class DbRepository
         var context = GetContext();
         context.Database.Migrate();
         
-        var gameStateEntity = new DbEntities.GameState()
+        var gameStateEntity = new DbEntities.GameState
         {
             GameDirection = gameEngine.GameState.GameDirection ? 1 : 0,
             CurrentPlayerIndex = gameEngine.GameState.CurrentPlayerIndex,
@@ -40,7 +40,7 @@ public static class DbRepository
 
         foreach (var player in gameEngine.GameState.PlayersList)
         {
-            var playerEntity = new DbEntities.Player()
+            var playerEntity = new DbEntities.Player
             {
                 Name = player.Name,
                 Type = (int)player.Type,
@@ -52,7 +52,7 @@ public static class DbRepository
 
             foreach (var card in player.Hand)
             {
-                var handEntity = new Hand()
+                var handEntity = new Hand
                 {
                     CardColor = (int)card.CardColor,
                     CardValue = (int)card.CardValue,
@@ -66,7 +66,7 @@ public static class DbRepository
 
         foreach (var card in gameEngine.GameState.StockPile)
         {
-            var stockPileEntity = new StockPile()
+            var stockPileEntity = new StockPile
             {
                 CardColor = (int)card.CardColor,
                 CardValue = (int)card.CardValue,
@@ -78,7 +78,7 @@ public static class DbRepository
 
         foreach (var card in gameEngine.GameState.UnoDeck.SerializedCards)
         {
-            var unoDeckEntity = new DbEntities.UnoDeck()
+            var unoDeckEntity = new DbEntities.UnoDeck
             {
                 CardColor = (int)card.CardColor,
                 CardValue = (int)card.CardValue,

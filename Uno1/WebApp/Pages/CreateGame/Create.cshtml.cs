@@ -40,7 +40,7 @@ public class CreateModel(AppDbContext context) : PageModel
             var gameManager = new GameManager(context);
             var data = gameManager.CreateTheGame(Nickname, PlayersMaxAmount, CardsMaxInHand, CardValueToAvoid);
             
-            return RedirectToPage($"/GameWait/Index", new { data.gameId, data.playerId, isBoss = 1, maxAmount = PlayersMaxAmount });
+            return RedirectToPage("/GameWait/Index", new { data.gameId, data.playerId, isBoss = 1, maxAmount = PlayersMaxAmount });
                 
         }
             
