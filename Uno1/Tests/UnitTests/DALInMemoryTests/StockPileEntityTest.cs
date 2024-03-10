@@ -1,7 +1,7 @@
 ﻿using DAL;
 using FluentAssert;
 using FluentAssertions;
-using Tests.TestUtils.DALTestsUtils.StockPileEntityTestUtils;
+using Tests.TestUtils.DALTestsUtils.Repositories;
 
 namespace Tests.UnitTests.DALInMemoryTests;
 

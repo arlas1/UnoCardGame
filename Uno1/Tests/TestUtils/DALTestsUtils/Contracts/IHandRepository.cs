@@ -1,6 +1,6 @@
 ﻿using DAL.DbEntities;
 
-namespace Tests.TestUtils.DALTestsUtils.HandEntityTestUtils;
+namespace Tests.TestUtils.DALTestsUtils.Contracts;
 
 public interface IHandRepository : IBaseRepository<Hand>
 {

@@ -1,7 +1,7 @@
 ﻿using DAL;
 using FluentAssert;
 using FluentAssertions;
-using Tests.TestUtils.DALTestsUtils.PlayerEntityTestUtils;
+using Tests.TestUtils.DALTestsUtils.Repositories;
 
 // ReSharper disable InconsistentNaming
 namespace Tests.UnitTests.DALInMemoryTests;

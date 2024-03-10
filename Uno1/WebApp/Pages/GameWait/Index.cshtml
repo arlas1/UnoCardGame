@@ -88,9 +88,7 @@ else
                 playerId: "@Model.PlayerId",
             },
             success: function (data) {
-                // Parse the received data as HTML and find the tbody
                 var updatedBody = $(data).find('#playerList');
-                // Replace the content of the existing tbody with the updated data
                 $('#playerList').html(updatedBody.html());   
             }
         });

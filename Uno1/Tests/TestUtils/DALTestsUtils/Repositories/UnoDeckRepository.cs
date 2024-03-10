@@ -1,7 +1,8 @@
 ﻿using DAL;
 using DAL.DbEntities;
+using Tests.TestUtils.DALTestsUtils.Contracts;
 
-namespace Tests.TestUtils.DALTestsUtils.UnoDeckEntityTestUtils;
+namespace Tests.TestUtils.DALTestsUtils.Repositories;
 
 public class UnoDeckRepository(AppDbContext dbContext) : IUnoDeckRepository
 {

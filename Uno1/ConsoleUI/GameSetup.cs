@@ -34,7 +34,7 @@ public class GameSetup
             return;
         }
 
-        int selectedGameIndex = 0; // Select by default first element
+        int selectedGameIndex = 0;
 
         ConsoleKeyInfo key;
 
@@ -92,7 +92,7 @@ public class GameSetup
             return;
         }
 
-        int selectedGameIndex = 0; // Select by default first element
+        int selectedGameIndex = 0;
 
         ConsoleKeyInfo key;
 

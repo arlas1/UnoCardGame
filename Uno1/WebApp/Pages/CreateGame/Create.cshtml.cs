@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using WebApp.GamesManager;
 
-
 namespace WebApp.Pages.CreateGame;
 
 public class CreateModel(AppDbContext context) : PageModel

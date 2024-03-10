@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using WebApp.GamesManager;
 
-
 namespace WebApp.Pages.Dashboard;
 
 public class IndexModel(AppDbContext context) : PageModel

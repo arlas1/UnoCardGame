@@ -1,7 +1,8 @@
 ﻿using DAL;
 using DAL.DbEntities;
+using Tests.TestUtils.DALTestsUtils.Contracts;
 
-namespace Tests.TestUtils.DALTestsUtils.PlayerEntityTestUtils;
+namespace Tests.TestUtils.DALTestsUtils.Repositories;
 
 public class PlayerRepository(AppDbContext dbContext) : IPlayerRepository
 {
