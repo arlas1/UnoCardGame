@@ -1,0 +1,6 @@
+*.cs linguist-language=C#
+*.csproj linguist-language=C#
+*.sln linguist-language=C#
+*.xml linguist-vendored
+bin/* linguist-vendored
+obj/* linguist-vendored
